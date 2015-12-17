@@ -19,7 +19,7 @@ Class1 c=new Class1();
 IORMRepository<Test> orTest = c.For<Test>();  得到一个ORM操作类，
 支持Find,FindAll,Max,Min,Count,Update,Delete,Exists,Sum等等常用方法，使用表达式调用 
 List<Test> l= orm.FindAll(t=> t.Id>7000); 查寻所有Id>7000的
-Test t=new Test();
+Test t=new Test(); 
 t.Sex=2
 t.Name="test";
 orm.Update(t,w=> w.Id>7000);  修改Id>7000的数据Sex为2，Name为test
