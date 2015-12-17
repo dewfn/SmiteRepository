@@ -29,7 +29,7 @@ orm.Update(t);   Update与Insert只会持久化有赋值的字段 到数据库
  EntityGenerate.tt， Base.ttinclude， MSSQL.ttinclude 把文件放在项目中
  修改EntityGenerate.tt里的命名空间，数据库连接，可自动生成与表一样的实体文件EntityGenerate.cs,文件内包括所有实体
  
- 
+  
  [TableName("Test")]
 	public partial class Test : BaseEntity
 	{
