@@ -4,6 +4,7 @@
 
 Dao层类，继承BaseRepository，BaseOracleRepository，BaseMysqlRepository  其中一个，根据数据库，
 实现基类的构造函数传入数据库连接，在当前类中就可以调用基类中的各种数据库操作方法
+
 public class Class1 : BaseRepository
   {
             public Class1() : base("你的数据库连接") { }
@@ -13,6 +14,7 @@ public class Class1 : BaseRepository
                 return p;
             }
 }
+
 Class1 c=new Class1(); 
 IORMRepository<Test> orTest = c.For<Test>();  得到一个ORM操作类，
 支持Find,FindAll,Max,Min,Count,Update,Delete,Exists,Sum等等常用方法，使用表达式调用 
