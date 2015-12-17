@@ -36,7 +36,7 @@ orm.Update(t);   Update与Insert只会持久化有赋值的字段 到数据库
 		private int _id;
 		/// <summary>
 		/// 
-		///  int(10)
+		///  int(10) 
 		/// </summary>
 		[Identity, PrimaryKey(1)] 
 		public int Id
