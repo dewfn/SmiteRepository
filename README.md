@@ -16,11 +16,12 @@ public class Class1 : BaseRepository
 Class1 c=new Class1(); 
 IORMRepository<Test> orTest = c.For<Test>();  得到一个ORM操作类，
 支持Find,FindAll,Max,Min,Count,Update,Delete,Exists,Sum等等常用方法，使用表达式调用 
-List<Test> l= orm.FindAll(t=> t.Id>7000);
+List<Test> l= orm.FindAll(t=> t.Id>7000); 查寻所有Id>7000的
 Test t=new Test();
-t.Id=2;
+t.Sex=2
 t.Name="test";
-orm.Update(t);   Update与Insert只会持久化有赋值的字段 到数据库
+orm.Update(t,w=> w.Id>7000);  修改Id>7000的数据Sex为2，Name为test
+Update与Insert只会持久化有赋值的字段 到数据库
 
  var k = orm.FindAll( where => where.Sex == 4,(display, F) => display(F.Name)); 取得Test表中所有Sex等于4的，只会查Name一个字段。
  
@@ -30,7 +31,7 @@ orm.Update(t);   Update与Insert只会持久化有赋值的字段 到数据库
  修改EntityGenerate.tt里的命名空间，数据库连接，可自动生成与表一样的实体文件EntityGenerate.cs,文件内包括所有实体
  
   
- [TableName("Test")]
+ 	[TableName("Test")]
 	public partial class Test : BaseEntity
 	{
 		private int _id;
