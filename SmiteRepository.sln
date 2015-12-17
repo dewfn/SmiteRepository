@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmiteRepository", "SmiteRepository\SmiteRepository.csproj", "{A9F29B93-74CD-48A3-AF1A-3D029B3806E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject2", "UnitTestProject2\UnitTestProject2.csproj", "{17ED9962-A4E8-4163-87A6-34604802B785}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A9F29B93-74CD-48A3-AF1A-3D029B3806E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9F29B93-74CD-48A3-AF1A-3D029B3806E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9F29B93-74CD-48A3-AF1A-3D029B3806E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9F29B93-74CD-48A3-AF1A-3D029B3806E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17ED9962-A4E8-4163-87A6-34604802B785}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17ED9962-A4E8-4163-87A6-34604802B785}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17ED9962-A4E8-4163-87A6-34604802B785}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17ED9962-A4E8-4163-87A6-34604802B785}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

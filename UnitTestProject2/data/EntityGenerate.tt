@@ -1,0 +1,24 @@
+﻿<#@ template debug="true" hostSpecific="true" #>
+<#@ output extension=".cs" #>
+<#@ include file="Base.ttinclude" #>
+<#@ include file="MSSql.ttinclude"  #>
+
+<#
+ 
+	ConnectionString = "Data Source=192.168.4.185;Initial Catalog=CRM_Backup;Persist Security Info=True;User ID=sa;Password=wulin!111111";
+    Namespace       = "UnitTestProject2";
+    DataContextName = "DataContext";
+	BaseEntityClass = "BaseEntity";
+	RenderForeignKeys = false;
+	RenderBackReferences = false;
+	
+Usings = new List<string>()
+{
+	"System",
+	"SmiteRepository"	
+};
+
+
+    GenerateModel();
+
+#>
