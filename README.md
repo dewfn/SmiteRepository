@@ -55,3 +55,7 @@ Update与Insert只会持久化有赋值的字段 到数据库
 		public string Name
 		{ get{ return _name; } 	set{ _name = value ;  OnPropertyChanged("Name"); } }
 	}
+
+
+
+Mysql,Oracle会有些BUG,（语法方面），用到的朋友请自己修改
