@@ -10,7 +10,8 @@ public class Class1 : BaseRepository
             public Class1() : base("你的数据库连接") { }
              public List<viewT> Get()
             {
-                List<viewT> p = base.Query<viewT>("select a.age,a.keys,z.class as classname from a_testzhu z left join  a_testage a on z.keys=a.keys where a.id>7000" );
+                List<viewT> p = base.Query<viewT>(
+                "select a.age,a.keys,z.class as classname from a_testzhu z left join  a_testage a on z.keys=a.keys where a.id>7000" );
                 return p;
             }
 }
@@ -25,7 +26,8 @@ t.Name="test";
 orm.Update(t,w=> w.Id>7000);  修改Id>7000的数据Sex为2，Name为test
 Update与Insert只会持久化有赋值的字段 到数据库
 
- var k = orm.FindAll( where => where.Sex == 4,(display, F) => display(F.Name)); 取得Test表中所有Sex等于4的，只会查Name一个字段。
+ var k = orm.FindAll( where => where.Sex == 4,(display, F) => display(F.Name));
+ 取得Test表中所有Sex等于4的，只会查Name一个字段。
  
  
  ----------------------------------自动生成实体 data目录下
