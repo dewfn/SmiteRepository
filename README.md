@@ -1,6 +1,6 @@
 # SmiteRepository
 .NET ORM框架，基于Dapper效率高，包括根据条件Update,Delete有修改字段，各种单表查寻，操作简单。
-支持分库，简单分页，暂不支持分表（想办法支持中，有头续的可以联系）。联系:else-love@qq.com
+支持分库，简单分页，支持分表（非侵入式分表方法）。联系:else-love@qq.com
 
 Dao层类，继承BaseRepository，BaseOracleRepository，BaseMysqlRepository  其中一个，根据数据库，
 实现基类的构造函数传入数据库连接，在当前类中就可以调用基类中的各种数据库操作方法
