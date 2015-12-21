@@ -15,7 +15,10 @@ namespace SmiteRepository
             public ORMException(string message)
                 : base(message)
             { }
-
+            public ORMException(string message,string sql)
+                : base(message)
+            { this.Sql = sql; }
+            private string Sql;
             /// <summary>
             /// 构造函数
             /// </summary>

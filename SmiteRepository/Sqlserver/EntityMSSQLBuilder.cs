@@ -15,7 +15,8 @@ namespace SmiteRepository.Sqlserver
                 return string.Empty;
 
             StringBuilder sqlbuilder = new StringBuilder();
-            sqlbuilder.AppendFormat("REPLACE INTO [{0}] (", meta.TableName);
+            //sqlbuilder.AppendFormat("REPLACE INTO [{0}] (", meta.TableName);
+            sqlbuilder.Append("REPLACE INTO [{0}] (");
             for (int i = 0, j = 0; i < meta.Columns.Count; i++)
             {
                 if (meta.Columns[i].Identity)
@@ -55,7 +56,8 @@ namespace SmiteRepository.Sqlserver
                 return string.Empty;
 
             StringBuilder sqlbuilder = new StringBuilder();
-            sqlbuilder.AppendFormat("INSERT INTO [{0}] (", meta.TableName);
+            //sqlbuilder.AppendFormat("INSERT INTO [{0}] (", meta.TableName);
+            sqlbuilder.Append("INSERT INTO [{0}] (");
             for (int i = 0, j = 0; i < meta.Columns.Count; i++)
             {
                 if (meta.Columns[i].Identity)
@@ -107,7 +109,8 @@ namespace SmiteRepository.Sqlserver
             var keys = meta.Columns.FindAll(_ => _.PrimaryKey);
 
             StringBuilder sqlbuilder = new StringBuilder();
-            sqlbuilder.AppendFormat("UPDATE [{0}] SET ", meta.TableName);
+            //sqlbuilder.AppendFormat("UPDATE [{0}] SET ", meta.TableName);
+            sqlbuilder.Append("UPDATE [{0}] SET ");
 
             for (int i = 0, j = 0; i < meta.Columns.Count; i++)
             {               
@@ -141,7 +144,8 @@ namespace SmiteRepository.Sqlserver
                 return string.Empty;
 
             StringBuilder sqlbuilder = new StringBuilder();
-            sqlbuilder.AppendFormat("INSERT INTO [{0}] (", meta.TableName);
+            //sqlbuilder.AppendFormat("INSERT INTO [{0}] (", meta.TableName);
+            sqlbuilder.Append("INSERT INTO [{0}] (");
             for (int i = 0, j = 0; i < meta.Columns.Count; i++)
             {
                 if (meta.Columns[i].Identity) continue;
@@ -192,7 +196,8 @@ namespace SmiteRepository.Sqlserver
                 return string.Empty;
 
             StringBuilder sqlbuilder = new StringBuilder();
-            sqlbuilder.AppendFormat("UPDATE [{0}] SET ", meta.TableName);
+            //sqlbuilder.AppendFormat("UPDATE [{0}] SET ", meta.TableName);
+            sqlbuilder.Append("UPDATE [{0}] SET ");
 
             for (int i = 0, j = 0; i < meta.Columns.Count; i++)
             {

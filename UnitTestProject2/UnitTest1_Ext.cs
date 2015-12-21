@@ -15,17 +15,70 @@ using SmiteRepository.Extansions;
 namespace UnitTestProject2
 {
     [TestClass]
-    public class UnitTest1:BaseRepository
+    public class UnitTest1_Ext:BaseRepository
     {
-        
-        public UnitTest1()
+
+        public UnitTest1_Ext()
             : base("Data Source=192.168.4.185;Initial Catalog=master;Persist Security Info=True;User ID=sa;Password=wulin!111111")
         {
-            orm = base.For<A_testyy>();
+           
+            RegisterORM.Register_CustomTableNameToDelete<A_testyy>(where => where.Id > 3,
+                delegate(object[] SqlParams, A_testyy Entity)
+                {
+                    int Id = (int)SqlParams[0];
+                    if(Id==3)
+                        return new string[]{"a_testyy_two","a_testyy"};
+                    else
+                        return new string[] {  "a_testyy" };
+                });
+            RegisterORM.Register_CustomTableNameToInsert<A_testyy>(
+               delegate(A_testyy Entity)
+               {
+                   if (Entity.Yy.StartsWith("two"))
+                       return "a_testyy_two";
+                   else
+                       return  "a_testyy" ;
+               });
+            RegisterORM.Register_CustomTableNameToUpdate<A_testyy>( w => w.Yy == "two99777",
+                delegate(object[] SqlParams, A_testyy Entity)
+                {
+                    string yy = SqlParams[0].ToString();
+                    if (yy.StartsWith("two"))
+                        return new string[] { "a_testyy_two" };
+                    else
+                        return new string[] { "a_testyy" };
+                });
+            RegisterORM.Register_CustomTableNameToSelect<A_testyy>(where => where.Yy == "two3232" && where.Sex > 1,
+               delegate(object[] SqlParams, A_testyy Entity)
+               {
+                   string yy = SqlParams[0].ToString();
+                   if (yy.StartsWith("two"))
+                       return new string[] {  "a_testyy_two" };
+                   else
+                       return new string[] { "a_testyy_two","a_testyy" };
+               });
+            RegisterORM.Register_CustomTableNameToSelect<A_testyy>(where => where.Yy.EndsWith("two") && where.Sex > 0,
+               delegate(object[] SqlParams, A_testyy Entity)
+               {
+                   string yy = SqlParams[0].ToString();
+                   if (yy.StartsWith("two"))
+                       return new string[] {  "a_testyy_two" };
+                   else
+                       return new string[] { "a_testyy_two","a_testyy" };
+               });
+            RegisterORM.Register_CustomTableNameToSelect<A_testyy>(where => where.Keys.Contains("keys") && where.Sex > 1,
+              delegate(object[] SqlParams, A_testyy Entity)
+              {
+                  string yy = SqlParams[0].ToString();
+                  //    return new string[] { "a_testyy_two" };
+                      return new string[] { "a_testyy_two", "a_testyy" };
+              });
+
             ExecSqlHandle.RegisterExecHandle(delegate(string sql,object @params){
                 return null;
             },true);
 
+            orm = base.For<A_testyy>();
         }
 
         IORMRepository<A_testyy> orm;
@@ -33,9 +86,9 @@ namespace UnitTestProject2
         [TestMethod]
         public void TestORM_Avg()
         {
-            
-            var k = orm.Avg<int>((Display, F) => Display(F.Sex), where => where.Sex > 1);
-            Assert.AreEqual(k, 6);
+
+            var k = orm.Avg<int>((Display, F) => Display(F.Sex), where => where.Yy == "sdfkjkh" && where.Sex >0);
+            Assert.AreEqual(k, 1);
         }
         [TestMethod]
         public void TestORM_Find()
@@ -82,13 +135,13 @@ namespace UnitTestProject2
         [TestMethod]
         public void TestORM_Count()
         {
-            var k = orm.Count( where => where.Sex > 1);
-            Assert.IsTrue(k>0);
+            var k = orm.Count(where => where.Yy.EndsWith("sdfkjkh") && where.Sex > 0);
+            Assert.IsTrue(k==1);
         }
         [TestMethod]
         public void TestORM_Scalar()
         {
-            var k = orm.Scalar<string>((display, F) => display(F.Class), where => where.Sex == 4);
+            var k = orm.Scalar<string>((display, F) => display(F.Class), where => where.Yy == "lkjl" && where.Sex > 1);
             Assert.AreEqual(k, "你好");
         }
         [TestMethod]
@@ -122,7 +175,7 @@ namespace UnitTestProject2
         public void TestInsert()
         {
             A_testyy yy = new A_testyy();
-            yy.Yy = "新的";
+            yy.Yy = "two新的";
             yy.Keys = "keys99";
             //yy.Sex = 3;
             yy.Class = "fdk";
@@ -136,15 +189,15 @@ namespace UnitTestProject2
             int r = orm.Delete(where => where.Id >id);
             Assert.IsTrue(r>-1);
         }
-        //[TestMethod]
-        //public void TestUpdate222()
-        //{
-        //    A_testzhu z = new A_testzhu();
-        //    z.Keys = "k";
-        //    z.Data = "abkc";
-        //    var r = base.For<A_testzhu>().Update(z, w => w.Class == "3");
-        //    Assert.AreEqual(r ,1);
-        //}
+        [TestMethod]
+        public void TestUpdate222()
+        {
+            A_testyy z = new A_testyy();
+            z.Sex =1;
+            z.Class = "testupdate1";
+            var r = orm.Update(z, w => w.Yy == "two99777");
+            Assert.AreEqual(r, 1);
+        }
 
         [TestMethod]
         public void Test()
@@ -181,8 +234,8 @@ namespace UnitTestProject2
             v.SortName="Id";
             v.SortOrder="desc";
 
-            var r = orm.GetPage(v,w=> w.Keys.Contains("keys"),null);
-            Assert.IsTrue(r .Total==3&&r.DataList.Count==3);
+            var r = orm.GetPage(v,w=> w.Keys.Contains("keys")&&w.Sex>1,null);
+            Assert.IsTrue(r .Total==4&&r.DataList.Count==3);
         }
         //[TestMethod]
         //public void Tes1111()
@@ -199,7 +252,8 @@ namespace UnitTestProject2
 
            
             var fdfd = d.ToJson();
-            Console.Write(fdfd);
+
+            Assert.IsFalse(string.IsNullOrEmpty(fdfd));
 
         
         }

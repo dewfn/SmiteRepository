@@ -204,8 +204,8 @@ namespace SmiteRepository.Command
 
         private string SetArgument(string name, object value)
         {
-            name = "@param_"+name;
-            string temp = name;
+          //   name = "@param_"+name;
+            string temp = "@param_" + Argument.Count;
             while (Argument.ContainsKey(temp))
             {
                 int code = Guid.NewGuid().GetHashCode();

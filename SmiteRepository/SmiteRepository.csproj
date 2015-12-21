@@ -46,8 +46,8 @@
   <ItemGroup>
     <Compile Include="BaseEntity.cs" />
     <Compile Include="Dapper\SqlMapper.cs" />
-    <Compile Include="DataList.cs" />
-    <Compile Include="DataParameter.cs" />
+    <Compile Include="Extansions\ExecSqlEvent.cs" />
+    <Compile Include="Extansions\RegisterORM.cs" />
     <Compile Include="Identity.cs" />
     <Compile Include="Mysql\BaseMysqlRepository.cs" />
     <Compile Include="Mysql\EntityMYSQLBuilder.cs" />
@@ -71,6 +71,7 @@
     <Compile Include="ExecType.cs" />
     <Compile Include="Fileds.cs" />
     <Compile Include="IORMRepository.cs" />
+    <Compile Include="Sqlserver\ORMRepository_Ext.cs" />
     <Compile Include="Sqlserver\ORMRepository.cs" />
     <Compile Include="ColumnAttribute.cs" />
     <Compile Include="Page\PageList.cs" />

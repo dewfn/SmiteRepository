@@ -101,6 +101,7 @@ namespace SmiteRepository.Sqlserver
              
 
              string sql = this.GetUpdateChangeColumnsSql(where == null,entity,meta); //表达式为空，表示需要 以主键为where条件
+             sql = string.Format(sql, meta.TableName);
              sql += whereSql;
 
             int result= DBHelper.ExecuteCommand(this.connectionString, sql,param);
@@ -122,6 +123,7 @@ namespace SmiteRepository.Sqlserver
              EntityMeta meta = EntityReflect.GetDefineInfoFromType(typeof(TEntity));
             
              string sql = this.GetInsertChangeColumnsSql(entity,meta);
+             sql = string.Format(sql, meta.TableName);
              long id= DBHelper.GetScalar<long>(connectionString, sql, entity);
              entity.RemoveUpdateColumn();//清除掉已更新的字段
              return id;

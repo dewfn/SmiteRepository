@@ -15,14 +15,14 @@ namespace SmiteRepository.ORMapping
             string typeKey = type.FullName;
             lock (lockobject)
             {
-                if (_cache.TryGetValue(type,out tdefine))
+                if (_cache.TryGetValue(type, out tdefine))
                 {
                     return tdefine;
                 }
             }
-           
+
             tdefine = new EntityMeta();
-            
+
             tdefine.EntityType = type;
             TableNameAttribute tableAttribute = (TableNameAttribute)Attribute.GetCustomAttribute(type, typeof(TableNameAttribute));
             if (tableAttribute != null)
@@ -32,25 +32,25 @@ namespace SmiteRepository.ORMapping
             else
             {
                 tdefine.TableName = type.Name;
-            }        
+            }
 
             PropertyInfo[] pinfos = type.GetProperties();
             foreach (PropertyInfo p in pinfos)
             {
-                Attribute[] attrs =  Attribute.GetCustomAttributes(p);
+                Attribute[] attrs = Attribute.GetCustomAttributes(p);
                 EntityColumnMeta ecmeta = new EntityColumnMeta();
                 ecmeta.ColumnName = p.Name;
                 ecmeta.FieldName = p.Name;
-              
-                foreach(Attribute cusattr in attrs)
+
+                foreach (Attribute cusattr in attrs)
                 {
                     if (cusattr is IgnoreAttribute)
                     {
-                        ecmeta = null; 
+                        ecmeta = null;
                         break;
                     }
                     if (cusattr is PrimaryKeyAttribute)
-                    {                       
+                    {
                         ecmeta.PrimaryKey = true;
                     }
                     if (cusattr is MapFieldAttribute)
@@ -58,7 +58,7 @@ namespace SmiteRepository.ORMapping
                         ecmeta.ColumnName = ((MapFieldAttribute)cusattr).MapFieldName;
                     }
                     if (cusattr is IdentityAttribute)
-                    {                      
+                    {
                         ecmeta.Identity = true;
                     }
                     if (cusattr is NullableAttribute)
@@ -69,14 +69,14 @@ namespace SmiteRepository.ORMapping
                 if (ecmeta != null)
                 {
                     tdefine.Columns.Add(ecmeta);
-                   
-                }               
+
+                }
             }
             lock (lockobject)
             {
-              
-                    _cache.Add(type, tdefine);
-                
+
+                _cache.Add(type, tdefine);
+
             }
             return tdefine;
         }
@@ -91,10 +91,13 @@ namespace SmiteRepository.ORMapping
             get { return entityType; }
             set { entityType = value; }
         }
-        public string TableName{get;set;}
+        public bool IsCustomTableName { set; get; }
+        public string TableName { get; set; }
         private List<EntityColumnMeta> _Columns;
-        public List<EntityColumnMeta> Columns { 
-            get{
+        public List<EntityColumnMeta> Columns
+        {
+            get
+            {
                 if (_Columns == null)
                 {
                     _Columns = new List<EntityColumnMeta>();
@@ -103,35 +106,41 @@ namespace SmiteRepository.ORMapping
             }
         }
         private string _selectStringColumns;
-        public string SelectStringColumns {
-            get {
-                if(_selectStringColumns==null)
+        public string SelectStringColumns
+        {
+            get
+            {
+                if (_selectStringColumns == null)
                 {
-                    StringBuilder sb=new StringBuilder();
-                    for (int i = 0,j=_Columns.Count(); i < j; i++)
-			        {
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0, j = _Columns.Count(); i < j; i++)
+                    {
                         if (i != 0)
                             sb.Append(",");
                         sb.Append(_Columns[i].ColumnName);
-                    
-			        }
-                  _selectStringColumns=sb.ToString();
-              }
+
+                    }
+                    _selectStringColumns = sb.ToString();
+                }
                 return _selectStringColumns;
-             }
             }
         }
-    
-    
+        public Dictionary<string, Delegate> DicCustomTableName_Select { get; set; }
+        public Dictionary<string, Delegate> DicCustomTableName_Update { get; set; }
+        public Delegate ACustomTableName_Insert { get; set; }
+        public Dictionary<string, Delegate> DicCustomTableName_Delete { get; set; }
+    }
+    public delegate IEnumerable<string> CustomTableNameDelegate<TEntity>(object[] SqlParams, TEntity Entity);
+    public delegate string OneCustomTableNameDelegate<TEntity>(TEntity Entity);
+
     internal class EntityColumnMeta
     {
         public string ColumnName { get; set; }
         public bool PrimaryKey { get; set; }
-        public bool Nullable { get;set;}
+        public bool Nullable { get; set; }
         public bool Identity { get; set; }
         public string FieldName { get; set; }
     }
-    public delegate string CreateTableNameDelegate();
-    
+
 }
 

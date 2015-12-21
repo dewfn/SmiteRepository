@@ -69,6 +69,7 @@
       <DependentUpon>EntityGenerate.tt</DependentUpon>
     </Compile>
     <Compile Include="Progerm.cs" />
+    <Compile Include="UnitTest1_Ext.cs" />
     <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

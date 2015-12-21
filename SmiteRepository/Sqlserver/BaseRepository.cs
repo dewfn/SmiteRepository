@@ -49,6 +49,7 @@ namespace SmiteRepository.Sqlserver
 
             ORMTEntity rep;
             IORMRepository<TEntity> rrmRe;
+            
             lock (_lockdic)
             {
                 if (dicORM.TryGetValue(typeof(TEntity), out rep))
@@ -58,7 +59,11 @@ namespace SmiteRepository.Sqlserver
                 }
                 else
                 {
-                    rrmRe = new ORMRepository<TEntity>(ConnectionString);
+                    EntityMeta meta = EntityReflect.GetDefineInfoFromType(typeof(TEntity));
+                    if (meta.IsCustomTableName)
+                        rrmRe = new ORMRepository_Ext<TEntity>(ConnectionString);
+                    else
+                        rrmRe = new ORMRepository<TEntity>(ConnectionString);
                     dicORM.Add(typeof(TEntity), new ORMTEntity(rrmRe));
                    
                 }

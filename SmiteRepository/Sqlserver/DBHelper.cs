@@ -6,6 +6,8 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using SmiteRepository.Dapper;
+using SmiteRepository;
+using SmiteRepository.Extansions;
 
 namespace SmiteRepository.Sqlserver
 {
@@ -22,6 +24,8 @@ namespace SmiteRepository.Sqlserver
 
             public static int ExecuteCommand(string connectionString, string sql, object values, CommandType cmdType = CommandType.Text, IDbTransaction transaction = null, int? timeOut=null)
             {
+                if (ExecSqlHandle.IsRegisterCall)
+                    sql = ExecSqlHandle.ExecHandleDelegate(sql, values);
                 using (SqlConnection connection = GetConnection(connectionString))
                 {
                     return connection.Execute(sql, values, transaction, timeOut, cmdType);
@@ -30,6 +34,8 @@ namespace SmiteRepository.Sqlserver
 
             public static T GetScalar<T>(string connectionString, string sql, object values, CommandType cmdType = CommandType.Text, IDbTransaction transaction = null,int? timeOut=null)
             {
+                if (ExecSqlHandle.IsRegisterCall)
+                    sql = ExecSqlHandle.ExecHandleDelegate(sql, values);
                 using (SqlConnection connection =GetConnection(connectionString))
                 {
                     return connection.ExecuteScalar<T>(sql, values, transaction, timeOut, cmdType);
@@ -38,6 +44,8 @@ namespace SmiteRepository.Sqlserver
 
             public static List<T> Query<T>(string connectionString, string sql, object values, CommandType cmdType = CommandType.Text, IDbTransaction transaction = null, int? timeOut=null)
             {
+                if (ExecSqlHandle.IsRegisterCall)
+                    sql = ExecSqlHandle.ExecHandleDelegate(sql, values);
                 using (SqlConnection connection = GetConnection(connectionString))
                 {
                     return connection.Query<T>(sql, values, transaction, true, timeOut, cmdType).ToList();
@@ -45,13 +53,16 @@ namespace SmiteRepository.Sqlserver
             }
             public static IDataReader GetReader(string connectionString, string sql, object values, CommandType cmdType = CommandType.Text, IDbTransaction transaction = null, int? timeOut=null)
             {
+                if (ExecSqlHandle.IsRegisterCall)
+                    sql = ExecSqlHandle.ExecHandleDelegate(sql, values);
                 SqlConnection connection = GetConnection(connectionString);
                 return connection.ExecuteReader(sql, values, transaction, timeOut, cmdType);
             }
 
             public static DataTable GetDataSet(string connectionString, string sql, object values, CommandType cmdType = CommandType.Text, IDbTransaction transaction = null, int? timeOut=null)
             {
-               
+                if (ExecSqlHandle.IsRegisterCall)
+                    sql = ExecSqlHandle.ExecHandleDelegate(sql, values);
                DataTable table = new DataTable();
                SqlConnection connection = GetConnection(connectionString);
             
