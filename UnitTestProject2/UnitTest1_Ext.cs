@@ -44,9 +44,9 @@ namespace UnitTestProject2
                 {
                     string yy = SqlParams[0].ToString();
                     if (yy.StartsWith("two"))
-                        return new string[] { "a_testyy_two" };
+                      return new string[] { "a_testyy_two" };
                     else
-                        return new string[] { "a_testyy" };
+                         return new string[] { "a_testyy" }; 
                 });
             RegisterORM.Register_CustomTableNameToSelect<A_testyy>(where => where.Yy == "two3232" && where.Sex > 1,
                delegate(object[] SqlParams, A_testyy Entity)
@@ -246,9 +246,12 @@ namespace UnitTestProject2
         //}
         [TestMethod]
         public void TestDataList() {
-            string consql = "Data Source=192.168.4.185;Initial Catalog=CRM_Backup;Persist Security Info=True;User ID=sa;Password=wulin!111111";
-
-            var d= this.Query<object>("select  * from a_testyy") ;
+            PageView v = new PageView();
+            v.PageIndex = 0;
+            v.PageSize = 2;
+            v.SortName = "Id";
+            v.SortOrder = "desc";
+            var d= this.PageGet<object>(v,"select  * from a_testyy") ;
 
            
             var fdfd = d.ToJson();

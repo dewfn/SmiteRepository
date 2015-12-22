@@ -10,15 +10,16 @@ namespace SmiteRepository
     /// <summary>
     /// 暂时没有对更新和插入操作做 线程安全，可改
     /// </summary>
-    public abstract class BaseEntity 
+    public abstract class BaseEntity
     {
         public BaseEntity() { }
         //private static Dictionary<Type, string> _InsertSqlCache = new Dictionary<Type, string>();
         //private static Dictionary<Type, string> _UpdateSqlCache = new Dictionary<Type, string>();
         //private static Dictionary<Type, string> _ReplaceSqlCache = new Dictionary<Type, string>();
 
-        //private static object lockobject = new object(); ---nolock
-
+#if Safety
+        public readonly object lockobject = new object();
+#endif
 
         private List<string> _PropertyChangedList = new List<string>();
 
@@ -51,7 +52,7 @@ namespace SmiteRepository
         //}
         //private string GetInsertChangeColumnsSql(Func<EntityMeta,List<string>,string> InsertFunc)
         //{
-            
+
         //    EntityMeta metadeta = EntityReflect.GetDefineInfoFromType(this.GetType());
         //    return EntitySQLBuilder.BuildInsertSql(metadeta, this._PropertyChangedList);
         //}
@@ -64,33 +65,45 @@ namespace SmiteRepository
 
         internal void RemoveUpdateColumn(string pName)
         {
-            //lock (lockobject)  ---nolock
-            //{
-                if (_PropertyChangedList.Contains(pName))
-                {
-                    _PropertyChangedList.Remove(pName);
-                }
-           // }
+#if Safety
+            lock (lockobject)  
+            {
+#endif
+            if (_PropertyChangedList.Contains(pName))
+            {
+                _PropertyChangedList.Remove(pName);
+            }
+#if Safety
+            }
+#endif
         }
         #endregion
 
         internal void RemoveUpdateColumn()
         {
-            //lock (lockobject)  ---nolock
-            //{
-                _PropertyChangedList.Clear();
-           // }
+#if Safety
+            lock (lockobject)  
+            {
+#endif
+            _PropertyChangedList.Clear();
+#if Safety
+            }
+#endif
         }
 
         protected void OnPropertyChanged(string pName)
         {
-            //lock (lockobject)   ---nolock
-            //{
-                if (!_PropertyChangedList.Contains(pName))
-                {
-                    _PropertyChangedList.Add(pName);
-                }
-           // }
+#if Safety
+            lock (lockobject)
+            {
+#endif
+            if (!_PropertyChangedList.Contains(pName))
+            {
+                _PropertyChangedList.Add(pName);
+            }
+#if Safety
+             }
+#endif
         }
 
         //internal string GetReplaceInsertSQL()
@@ -149,7 +162,7 @@ namespace SmiteRepository
         //    }
         //    return _UpdateSqlCache[t];
         //}
-       
+
         #endregion
     }
 }

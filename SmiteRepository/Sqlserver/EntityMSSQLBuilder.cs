@@ -247,14 +247,14 @@ namespace SmiteRepository.Sqlserver
             if (string.IsNullOrEmpty(view.Primary))
                 return BuildPageSql(sql, view, view.Primary);
             sql=sql.Substring(sql.IndexOf("SELECT ",StringComparison.InvariantCultureIgnoreCase)+7);
-            string pageSql = string.Format(" SELECT TOP {0} *  FROM (SELECT ROW_NUMBER() OVER({1}) AS {2},{3} ) AS TEMP  WHERE {2} >{4} ORDER BY {2}  ",
+            string pageSql = string.Format(" SELECT TOP {0} *  FROM (SELECT ROW_NUMBER() OVER({1}) AS {2},{3} ) AS TEMP_TABLE  WHERE {2} >{4} ORDER BY {2}  ",
                 view.PageSize, view.GetSqlOrder(), Define.MYROWID, sql, view.PageIndex * view.PageSize);
             return pageSql;
         }
         internal static string BuildPageSql(string sql, Page.PageView view,string pk)
         {
             sql = sql.Substring(sql.IndexOf("SELECT ", StringComparison.InvariantCultureIgnoreCase) + 7);
-            string pageSql = string.Format(" SELECT TOP {0} *  FROM (SELECT ROW_NUMBER() OVER({1}) AS {2},{3} ) AS TEMP  WHERE {2} >{4} ORDER BY {2}  ",
+            string pageSql = string.Format(" SELECT TOP {0} *  FROM (SELECT ROW_NUMBER() OVER({1}) AS {2},{3} ) AS TEMP_TABLE  WHERE {2} >{4} ORDER BY {2}  ",
                 view.PageSize, view.GetSqlOrder(), Define.MYROWID, sql, view.PageIndex * view.PageSize);
             return pageSql;
         }
