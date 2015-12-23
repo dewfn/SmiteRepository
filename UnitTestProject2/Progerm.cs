@@ -70,9 +70,10 @@ namespace UnitTestProject2
         public delegate string CreateTableNameDelegate<T>(T o);
 
         static void Main() {
-         
 
 
+            string s = null;
+            string klj = string.Format("{0}", s);
             string con = "Data Source=192.168.4.185;Initial Catalog=master;Persist Security Info=True;User ID=sa;Password=wulin!111111";
             Class1 c = new Class1(con);
 
@@ -100,7 +101,7 @@ namespace UnitTestProject2
 
 
             var ss = orm.FindAll(w => w.Testname=="nihao");
-            var ss2 = orm.FindAll(w => w.Id > 7000);
+            var ss2 = orm.FindAll(w => w.Id > 7000,(D,F)=>D(F.Age,F.Keys));
 
 
             A_testage y = new A_testage();

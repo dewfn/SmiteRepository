@@ -19,12 +19,18 @@ namespace SmiteRepository.Sqlserver
     /// <typeparam name="TEntity"></typeparam>
     public class ORMRepository<TEntity> : IORMRepository<TEntity> where TEntity : BaseEntity, new()
      {
-         public ORMRepository(string connectionString)
+        internal ORMRepository(string connectionString, EntityMeta Meta)
          {
              this.connectionString = connectionString;
+             meta = Meta;
          }
+        public ORMRepository(string connectionString)
+        {
+            meta=EntityReflect.GetDefineInfoFromType(typeof(TEntity));
+            this.connectionString = connectionString; 
+        }
          private string connectionString;
-
+         EntityMeta meta;
         
          public int Test<tr>(Expression<Func<TEntity,bool>> where, Expression<Action<TEntity>> fields)
          {
@@ -38,7 +44,6 @@ namespace SmiteRepository.Sqlserver
          {
              string whereSql = string.Empty;
              DynamicParameters param = null;
-             EntityMeta meta = EntityReflect.GetDefineInfoFromType(typeof(TEntity));
              if (where != null)
              {
                  ResolveExpress r = new ResolveExpress(where, meta);
@@ -73,7 +78,6 @@ namespace SmiteRepository.Sqlserver
          {
              string whereSql = string.Empty;
              DynamicParameters param = new DynamicParameters(entity);
-             EntityMeta meta = EntityReflect.GetDefineInfoFromType(typeof(TEntity));
 
              if (where != null)
              {
@@ -120,7 +124,6 @@ namespace SmiteRepository.Sqlserver
 
          public long Insert(TEntity entity) 
          {
-             EntityMeta meta = EntityReflect.GetDefineInfoFromType(typeof(TEntity));
             
              string sql = this.GetInsertChangeColumnsSql(entity,meta);
              sql = string.Format(sql, meta.TableName);
@@ -135,41 +138,67 @@ namespace SmiteRepository.Sqlserver
 
          public TEntity Find(Expression<Predicate<TEntity>> where) 
          {
-             EntityMeta meta = EntityReflect.GetDefineInfoFromType(typeof(TEntity));
              string showFields = meta.SelectStringColumns;
-             List<TEntity> list = FindAll(where, showFields, meta);
-             return list.FirstOrDefault();
+             return Find(where, showFields, null);
          }
          public TEntity Find(Expression<Predicate<TEntity>> where, Expression<Func<Fileds.DisplaysMethod, TEntity, Fileds>> fields)
          {
-             EntityMeta meta = EntityReflect.GetDefineInfoFromType(typeof(TEntity));
+           
              string showFields = GetShowFields(fields, meta);
-             List<TEntity> list = FindAll(where, showFields, meta);
+             return Find(where, showFields, null);
 
-             return list.FirstOrDefault();
          }
+         public TEntity Find(Expression<Predicate<TEntity>> where, Expression<Func<Fileds.DisplaysMethod, TEntity, Fileds>> fields, Expression<Func<Fileds.OrderByMethod, TEntity, Fileds>> order_fields)
+         {
+             string showFields = GetShowFields(fields, meta);
+             string orderFields = GetOrderByFields(order_fields, meta);
+             return Find(where, showFields, orderFields);
+         }
+         private TEntity Find(Expression<Predicate<TEntity>> where, string showFields, string orderFields)
+         {
+             string whereSql = string.Empty;
+             DynamicParameters param = null;
+             Dictionary<string, object> dicArgument = null;
+             string sql = string.Empty;
+             if (where != null)
+             {
 
+                 ResolveExpress r = new ResolveExpress(where, meta);
+                 whereSql = " WHERE " + r.SqlWhere;
+                 dicArgument = r.Argument;
+                 param = new DynamicParameters();
+                 foreach (var arg in r.Argument)
+                 {
+                     param.Add(arg.Key, arg.Value);
+                 }
+
+             }
+            
+                 if (!string.IsNullOrEmpty(orderFields))
+                     orderFields = " ORDER BY " + orderFields;
+                 sql = string.Format("SELECT TOP 1 {0} from {1} {2} {3}", showFields, meta.TableName, whereSql, orderFields);
+             
+
+
+             return DBHelper.Query<TEntity>(connectionString, sql, param).FirstOrDefault();
+         }
          public List<TEntity> FindAll(Expression<Predicate<TEntity>> where) 
          {
-             EntityMeta meta = EntityReflect.GetDefineInfoFromType(typeof(TEntity));
              string showFields = meta.SelectStringColumns;
              return FindAll(where, showFields, meta);
          }
          public List<TEntity> FindAll()
          {
-             EntityMeta meta = EntityReflect.GetDefineInfoFromType(typeof(TEntity));
              string showFields = meta.SelectStringColumns;
              return FindAll(null, showFields, meta);
          }
          public List<TEntity> FindAll(Expression<Func<Fileds.DisplaysMethod, TEntity, Fileds>> fields)
          {
-             EntityMeta meta = EntityReflect.GetDefineInfoFromType(typeof(TEntity));
              string showFields = GetShowFields(fields, meta);
              return FindAll(null, showFields, meta);
          }
          public List<TEntity> FindAll(Expression<Predicate<TEntity>> where, Expression<Func<Fileds.DisplaysMethod, TEntity, Fileds>> fields) 
          {
-             EntityMeta meta = EntityReflect.GetDefineInfoFromType(typeof(TEntity));
              string showFields = GetShowFields(fields, meta);
              return FindAll(where, showFields, meta);
          }
@@ -201,7 +230,6 @@ namespace SmiteRepository.Sqlserver
          #region 分页查找方法
          public PagedList<TEntity> GetPage(PageView pView, Expression<Predicate<TEntity>> where=null, Expression<Func<Fileds.DisplaysMethod, TEntity, Fileds>> fields=null)
          {
-             EntityMeta meta = EntityReflect.GetDefineInfoFromType(typeof(TEntity));
              string showFields = GetShowFields(null, meta);
              return GetPage(where, showFields, meta, pView);
          }
@@ -258,12 +286,12 @@ namespace SmiteRepository.Sqlserver
 
              string args = lambda.Parameters[1].Name + ".";
              bodyStr = bodyStr.Replace(')', ' ').Replace('}', ' ');
-             string[] fieldArray = bodyStr.Split(',');
+             var fieldArray = bodyStr.Split(',').Distinct();
              EntityColumnMeta fileColumn;
              StringBuilder showFields = new StringBuilder();
-             for (int i = 0; i < fieldArray.Length; i++)
+             foreach (var fieldFilter in fieldArray)
              {
-                 string item = fieldArray[i].Trim();
+                 string item = fieldFilter.Trim();
                  int argIndex = item.IndexOf(args);
                  if (argIndex == -1)
                      continue;
@@ -273,15 +301,45 @@ namespace SmiteRepository.Sqlserver
                      throw new ORMException(string.Format("映射列名[{0}]找不到", item));
                  showFields.Append(fileColumn.ColumnName).Append(",");
              }
+            
              return showFields.Length > 0 ? showFields.Remove(showFields.Length - 1, 1).ToString() : string.Empty;
          }
+         private string GetOrderByFields(Expression fields, EntityMeta meta)
+         {
+             if (fields == null)
+                 return meta.SelectStringColumns;
+             if (!(fields is LambdaExpression))
+                 throw new ORMException("传入排序字段表达式错误!");
+             LambdaExpression lambda = fields as LambdaExpression;
+             string bodyStr = lambda.Body.ToString();
 
+             string args = lambda.Parameters[1].Name + ".";
+             bodyStr = bodyStr.Replace(')', ' ').Replace('}', ' ').Replace('(', ' ');
+             var fieldArray = bodyStr.Split(',').Distinct();
+             EntityColumnMeta fileColumn;
+             StringBuilder showFields = new StringBuilder();
+             string[] orderArray;
+             foreach (var fieldFilter in fieldArray)
+             {
+                 string item = fieldFilter.Trim();
+                 int argIndex = item.IndexOf(args);
+                 if (argIndex == -1)
+                     continue;
+                 item = item.Substring(argIndex + args.Length);
+                 orderArray = item.Split('.');
+                 fileColumn = meta.Columns.Find(x => x.FieldName == orderArray[0]);
+                 if (fileColumn == null)
+                     throw new ORMException(string.Format("映射列名[{0}]找不到", item));
+                 showFields.Append(fileColumn.ColumnName).Append(orderArray[1].Replace("()", "")).Append(",");
+             }
+
+             return showFields.Length > 0 ? showFields.Remove(showFields.Length - 1, 1).ToString() : string.Empty;
+         }
 
          protected TResult ExecOne<TResult>(Expression fields, Expression where, string execType)
          {
              string whereSql = string.Empty;
              DynamicParameters param = null;
-             EntityMeta meta = EntityReflect.GetDefineInfoFromType(typeof(TEntity));
              if (where != null)
              {
                  param = new DynamicParameters();

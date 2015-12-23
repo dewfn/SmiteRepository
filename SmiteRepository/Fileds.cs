@@ -22,6 +22,7 @@ namespace SmiteRepository
         /// <returns></returns>
         public delegate Fileds DisplayMethod<TResult>(TResult files);
         public delegate Fileds DisplayMethod(IConvertible files);
+        public delegate Fileds OrderByMethod(params OrderFileds[] files);
         public static Fileds Include(params IConvertible[] fileds) {
             return null;
         }
@@ -34,4 +35,5 @@ namespace SmiteRepository
             return null;
         }
     }
+    public class OrderFileds { }
 }

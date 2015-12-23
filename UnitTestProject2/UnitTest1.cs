@@ -38,6 +38,13 @@ namespace UnitTestProject2
             Assert.AreEqual(k, 6);
         }
         [TestMethod]
+        public void TestORM_Find_Order()
+        {
+            A_testyy y = new A_testyy();
+            var k = orm.Find(where => where.Id > 1, (Display, F) => Display(F.Keys, F.Class), (Order, F) => Order(F.Id.Desc(), F.Yy.Asc()));
+            Assert.IsNotNull(k);
+        } 
+        [TestMethod]
         public void TestORM_Find()
         { 
             A_testyy y=new A_testyy();

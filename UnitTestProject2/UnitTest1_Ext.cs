@@ -73,7 +73,15 @@ namespace UnitTestProject2
                   //    return new string[] { "a_testyy_two" };
                       return new string[] { "a_testyy_two", "a_testyy" };
               });
-
+            RegisterORM.Register_CustomTableNameToSelect<A_testyy>(where => where.Id > 3,
+                delegate(object[] SqlParams, A_testyy Entity)
+                {
+                    int Id = (int)SqlParams[0];
+                    if (Id == 1)
+                        return new string[] { "a_testyy_two", "a_testyy" };
+                    else
+                        return new string[] { "a_testyy" };
+                });
             ExecSqlHandle.RegisterExecHandle(delegate(string sql,object @params){
                 return null;
             },true);
@@ -91,13 +99,12 @@ namespace UnitTestProject2
             Assert.AreEqual(k, 1);
         }
         [TestMethod]
-        public void TestORM_Find()
+        public void TestORM_Find_Order()
         { 
             A_testyy y=new A_testyy();
-            var k = orm.Find(where => where.Sex == 8, (Display, F) => Display(F.Keys));
+            var k = orm.Find(where => where.Id>1, (Display, F) => Display(F.Keys, F.Class), (Order, F) => Order(F.Id.Desc(), F.Yy.Asc()));
             Assert.IsNotNull(k);
-        }
-        
+        } 
         [TestMethod]
         public void TestORM_FindAll()
         {
@@ -111,6 +118,14 @@ namespace UnitTestProject2
             var kkk = orm.FindAll(x => x.Keys.Contains("fdfdf"));
             Assert.IsNotNull(kkk);
         }
+        [TestMethod]
+        public void TestORM_Find()
+        {
+            A_testyy y = new A_testyy();
+            var k = orm.Find(where => where.Id > 1, (Display, F) => Display(F.Keys, F.Class));
+            Assert.IsNotNull(k);
+        }
+       
         [TestMethod]
         public void TestORM_Max()
         {

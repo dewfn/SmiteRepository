@@ -61,9 +61,9 @@ namespace SmiteRepository.Sqlserver
                 {
                     EntityMeta meta = EntityReflect.GetDefineInfoFromType(typeof(TEntity));
                     if (meta.IsCustomTableName)
-                        rrmRe = new ORMRepository_Ext<TEntity>(ConnectionString);
+                        rrmRe = new ORMRepository_Ext<TEntity>(ConnectionString,meta);
                     else
-                        rrmRe = new ORMRepository<TEntity>(ConnectionString);
+                        rrmRe = new ORMRepository<TEntity>(ConnectionString,meta);
                     dicORM.Add(typeof(TEntity), new ORMTEntity(rrmRe));
                    
                 }
