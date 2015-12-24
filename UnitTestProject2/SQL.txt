@@ -1,0 +1,67 @@
+﻿
+/****** Object:  Table [dbo].[a_testyy]    Script Date: 2015/12/24 14:44:12 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[a_testyy](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Yy] [varchar](50) NOT NULL,
+	[Class] [varchar](50) NOT NULL,
+	[Keys] [varchar](50) NOT NULL,
+	[Sex] [int] NULL,
+ CONSTRAINT [PK_a_testyy] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+SET ANSI_PADDING OFF
+GO
+/****** Object:  Table [dbo].[a_testyy_two]    Script Date: 2015/12/24 14:44:12 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[a_testyy_two](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Yy] [varchar](50) NOT NULL,
+	[Class] [varchar](50) NOT NULL,
+	[Keys] [varchar](50) NOT NULL,
+	[Sex] [int] NULL,
+ CONSTRAINT [PK_a_testyy_two] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+SET ANSI_PADDING OFF
+GO
+SET IDENTITY_INSERT [dbo].[a_testyy] ON 
+
+GO
+INSERT [dbo].[a_testyy] ([Id], [Yy], [Class], [Keys], [Sex]) VALUES (1, N'润湿夺', N'3', N'keys8', 8)
+GO
+INSERT [dbo].[a_testyy] ([Id], [Yy], [Class], [Keys], [Sex]) VALUES (2, N'lkjl', N'你好', N'keys2', 4)
+GO
+INSERT [dbo].[a_testyy] ([Id], [Yy], [Class], [Keys], [Sex]) VALUES (3, N'sdfkjkh', N'kkiiuoi', N'keys3', 1)
+GO
+SET IDENTITY_INSERT [dbo].[a_testyy] OFF
+GO
+SET IDENTITY_INSERT [dbo].[a_testyy_two] ON 
+
+GO
+INSERT [dbo].[a_testyy_two] ([Id], [Yy], [Class], [Keys], [Sex]) VALUES (1, N'two323', N'uoiu', N'keys9', 9)
+GO
+INSERT [dbo].[a_testyy_two] ([Id], [Yy], [Class], [Keys], [Sex]) VALUES (2, N'two3232', N'uifdufi', N'keys8', 9)
+GO
+INSERT [dbo].[a_testyy_two] ([Id], [Yy], [Class], [Keys], [Sex]) VALUES (3, N'two99777', N'testupdate1', N'keys3', 1)
+GO
+SET IDENTITY_INSERT [dbo].[a_testyy_two] OFF
+GO
