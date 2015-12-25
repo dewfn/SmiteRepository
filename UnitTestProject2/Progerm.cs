@@ -76,7 +76,7 @@ namespace UnitTestProject2
             string klj = string.Format("{0}", s);
             string con = "Data Source=192.168.4.185;Initial Catalog=master;Persist Security Info=True;User ID=sa;Password=wulin!111111";
             Class1 c = new Class1(con);
-
+            c.Exec();
 
             Dictionary<string, object> dic = new Dictionary<string, object>();
             dic.Add("dsf", new Test());

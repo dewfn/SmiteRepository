@@ -64,6 +64,15 @@ public string Classname
                 List<viewT> p = base.Query<viewT>("select a.age,a.keys,z.class as classname from a_testzhu z left join  a_testage a on z.keys=a.keys where a.id>7000" );
                 return p;
             }
+            public void Exec() { 
+            
+                DataParameter dbp=new DataParameter();
+
+                IDataReader r = base.GetReader("SELECT *  FROM [dbo].[a_testage]");
+                
+
+                string d = "";
+            }
             public List<viewT> Get2()
             {
                 List<viewT> l = new List<viewT>();
