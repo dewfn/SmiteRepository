@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using System.Text.RegularExpressions;
 namespace SmiteRepository.Sqlserver
 {
     internal class EntityMSSQLBuilder
@@ -239,24 +239,69 @@ namespace SmiteRepository.Sqlserver
 
         internal static string BuildPageCountSql (string sql)
         {
-            string pageSql = string.Format(" SELECT Count(1) FROM ( {0} ) AS TEMP ",sql);
-            return pageSql;
+            
+            Regex sqlRegex = new Regex(sqlRegexString, RegexOptions.IgnoreCase);
+            Match match = sqlRegex.Match(sql);
+            if (!match.Success)
+            {
+                throw new ORMException("SQL解析错误或解析不了，请确认你的SQL正解", sql);
+            }
+            string selectColums = match.Groups["col"].Value;
+            string tablename = match.Groups["tname"].Value;
+            string wheresql = match.Groups["where"].Value;
+            string ordersql = match.Groups["order"].Value;
+            wheresql = string.IsNullOrWhiteSpace(wheresql) ? string.Empty : " WHERE " + wheresql;
+           return string.Format(pageCountSql,  tablename,  wheresql);
         }
         internal static string BuildPageSql(string sql,Page.PageView view)
         {
-            if (string.IsNullOrEmpty(view.Primary))
-                return BuildPageSql(sql, view, view.Primary);
-            sql=sql.Substring(sql.IndexOf("SELECT ",StringComparison.InvariantCultureIgnoreCase)+7);
-            string pageSql = string.Format(" SELECT TOP {0} *  FROM (SELECT ROW_NUMBER() OVER({1}) AS {2},{3} ) AS TEMP_TABLE  WHERE {2} >{4} ORDER BY {2}  ",
-                view.PageSize, view.GetSqlOrder(), Define.MYROWID, sql, view.PageIndex * view.PageSize);
+            //if (!string.IsNullOrWhiteSpace(view.Primary))
+             //   return BuildPageSql(sql, view, view.Primary);
+            Regex sqlRegex = new Regex(sqlRegexString, RegexOptions.IgnoreCase);
+            Match match = sqlRegex.Match(sql);
+            if (!match.Success)
+            {
+                throw new ORMException("SQL解析错误或解析不了，请确认你的SQL正解", sql);
+            }
+            string selectColums = match.Groups["col"].Value;
+            string tablename = match.Groups["tname"].Value;
+            string wheresql = match.Groups["where"].Value;
+            string ordersql = match.Groups["order"].Value;
+            wheresql = string.IsNullOrWhiteSpace(wheresql) ? string.Empty : " WHERE " + wheresql;
+            string viewOrder = view.GetSqlOrder();
+            if (!string.IsNullOrEmpty(viewOrder))
+                ordersql = viewOrder;
+
+
+            string pageSql = string.Format(" SELECT TOP {0} {3}  FROM (SELECT ROW_NUMBER() OVER({1}) AS {2},{3} FROM {5} {6}) AS TEMP_TABLE  WHERE {2} >{4} ORDER BY {2}  ",
+                view.PageSize, view.GetSqlOrder(), Define.MYROWID,selectColums, view.PageIndex * view.PageSize,tablename,wheresql);
             return pageSql;
         }
+        static string pageCountSql = " SELECT Count(1) AS COUNT_ROW FROM {0} {1}";
+        static string sqlRegexString = "select(?<col>((?!select|from)[\\S\\s])+(((?'Open'select)((?!select|from)[\\S\\s])+)+((?'-Open'from)((?!select|from)[\\S\\s])+)+)*(?(Open)(?!)))from\\s+(?<tname>(?(\\()(\\([^\\(\\)]*((?'TNGroup'\\()[^\\(\\)]*((?'-TNGroup'\\))[^\\(\\)]*)*)*(?(TNGroup)(?!))\\))|\\S+)(\\s+AS)*((?!WHERE)[\\S\\s])*)(WHERE\\s+(?<where>((?!ORDER\\s+BY)[\\S\\s])+))?(ORDER\\s+BY\\s+(?<order>[\\S\\s]+))?";
+        static string pageSql = @"SELECT TOP {5} {0} FROM 
+                                {1}
+                                INNER JOIN
+                                (SELECT ROW_NUMBER() OVER( ORDER BY {2}) AS ROWID,{3} AS TEMP_IDENTITY  FROM 
+                                  {1} 
+                                  {4}) AS TEMP_PAGE_TABLE ON TEMP_PAGE_TABLE.TEMP_IDENTITY={3} WHERE TEMP_PAGE_TABLE.ROWID>{6} ORDER BY TEMP_PAGE_TABLE.ROWID";
         internal static string BuildPageSql(string sql, Page.PageView view,string pk)
         {
-            sql = sql.Substring(sql.IndexOf("SELECT ", StringComparison.InvariantCultureIgnoreCase) + 7);
-            string pageSql = string.Format(" SELECT TOP {0} *  FROM (SELECT ROW_NUMBER() OVER({1}) AS {2},{3} ) AS TEMP_TABLE  WHERE {2} >{4} ORDER BY {2}  ",
-                view.PageSize, view.GetSqlOrder(), Define.MYROWID, sql, view.PageIndex * view.PageSize);
-            return pageSql;
+            Regex sqlRegex = new Regex(sqlRegexString, RegexOptions.IgnoreCase);
+            Match match = sqlRegex.Match(sql);
+            if (!match.Success) {
+              throw  new ORMException("SQL解析错误或解析不了，请确认你的SQL正解", sql);
+            }
+                string selectColums = match.Groups["col"].Value;
+                string tablename = match.Groups["tname"].Value;
+                string wheresql = match.Groups["where"].Value;
+                string ordersql = match.Groups["order"].Value;
+                wheresql = string.IsNullOrWhiteSpace(wheresql) ? string.Empty : " WHERE " + wheresql;
+                string viewOrder= view.GetSqlOrder();
+                if (!string.IsNullOrEmpty(viewOrder))
+                    ordersql = viewOrder;
+                return string.Format(pageSql, selectColums, tablename, ordersql, pk, wheresql, view.PageSize, view.PageIndex * view.PageSize);
+
         }
     }
 }

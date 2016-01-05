@@ -82,7 +82,7 @@ public string Classname
                     while (r.Read())
                     {
                         v = new viewT();
-                        if(!r.IsDBNull(0))
+                        if(!r.IsDBNull(0)) 
                         v.Age = r.GetInt32(0);
                         if (!r.IsDBNull(1))
                         v.Keys = r.GetString(1);
