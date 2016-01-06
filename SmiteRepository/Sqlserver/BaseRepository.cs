@@ -80,8 +80,7 @@ namespace SmiteRepository.Sqlserver
         /// <param name="param"></param>
         /// <returns></returns>
         protected PagedList<T> PageGet<T>(PageView view, string sql, object param, int? timeOut = null) where T : class,new()
-        {
-            string sqlOrder = view.GetSqlOrder();
+        { 
 
             PagedList<T> pList = new PagedList<T>();
 

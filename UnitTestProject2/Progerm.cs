@@ -1,5 +1,6 @@
 ﻿using ConsoleApplication3;
 using SmiteRepository;
+using SmiteRepository.Page;
 using SmiteRepository.Sqlserver;
 using System;
 using System.Collections.Generic;
@@ -74,24 +75,27 @@ namespace UnitTestProject2
 
             string s = null;
             string klj = string.Format("{0}", s);
-            string con = "Data Source=192.168.4.185;Initial Catalog=master;Persist Security Info=True;User ID=sa;Password=wulin!111111;pooling=true;min pool size=5;max pool size=5";
+            string con = "Data Source=192.168.4.185;Initial Catalog=CRM;Persist Security Info=True;User ID=sa;Password=wulin!111111;pooling=true;min pool size=5;max pool size=5";
             Class1 c = new Class1(con);
+            PageView p = new PageView(0, 100, "", "", 0);
+            p.Primary = "cpi.Clue_guid";
+            //p.SortName = "cpi.Clue_Guid";
+           var ll= c.TestGet(p);
             //c.Get();  
 
-            for (int i = 0; i < 10; i++)
-            {
-                Task.Factory.StartNew(new Action(delegate()
-                {
-                   // while (true)
-                   // {
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    Task.Factory.StartNew(new Action(delegate()
+            //    {
+            //       // while (true)
+            //       // {
 
-                        c.Get();
-                   // }
+            //            c.Get();
+            //       // }
 
-                }));
-			}
-
-            Console.Read();
+            //    }));
+            //}
+           return;
 
 
             Dictionary<string, object> dic = new Dictionary<string, object>();

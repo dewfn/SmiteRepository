@@ -239,24 +239,71 @@ namespace SmiteRepository.Sqlserver
 
         internal static string BuildPageCountSql (string sql)
         {
-            
-            Regex sqlRegex = new Regex(sqlRegexString, RegexOptions.IgnoreCase);
-            Match match = sqlRegex.Match(sql);
-            if (!match.Success)
-            {
-                throw new ORMException("SQL解析错误或解析不了，请确认你的SQL正解", sql);
-            }
-            string selectColums = match.Groups["col"].Value;
-            string tablename = match.Groups["tname"].Value;
-            string wheresql = match.Groups["where"].Value;
-            string ordersql = match.Groups["order"].Value;
-            wheresql = string.IsNullOrWhiteSpace(wheresql) ? string.Empty : " WHERE " + wheresql;
+            var sqlDic = GetSqlRegex(sql);
+            string tablename = sqlDic["tname"];
+            string wheresql = sqlDic["where"];
+           
            return string.Format(pageCountSql,  tablename,  wheresql);
         }
         internal static string BuildPageSql(string sql,Page.PageView view)
         {
             //if (!string.IsNullOrWhiteSpace(view.Primary))
-             //   return BuildPageSql(sql, view, view.Primary);
+            //    return BuildPageSql(sql, view, view.Primary);
+            var sqlDic = GetSqlRegex(sql);
+            string selectColums = sqlDic["col"];
+            string tablename = sqlDic["tname"];
+            string wheresql = sqlDic["where"];
+            string ordersql = sqlDic["order"];
+
+            string viewOrder = view.GetSqlOrder();
+            if (!string.IsNullOrEmpty(viewOrder))
+                ordersql = viewOrder;
+
+
+            string pageSql = string.Format(pageSql2,
+                view.PageIndex * view.PageSize, ordersql, Define.MYROWID, selectColums, (view.PageIndex + 1) * view.PageSize, tablename, wheresql);
+            return pageSql;
+        }
+        static string pageCountSql = " SELECT Count(1) AS COUNT_ROW FROM {0} {1}";
+        static string sqlRegexString = "select(?<col>((?!select|from)[\\S\\s])+(((?'Open'select)((?!select|from)[\\S\\s])+)+((?'-Open'from)((?!select|from)[\\S\\s])+)+)*(?(Open)(?!)))from\\s+(?<tname>(?(\\()(\\([^\\(\\)]*((?'TNGroup'\\()[^\\(\\)]*((?'-TNGroup'\\))[^\\(\\)]*)*)*(?(TNGroup)(?!))\\))|\\S+)(\\s+AS)*((?!WHERE)[\\S\\s])*)(WHERE\\s+(?<where>((?!ORDER\\s+BY)[\\S\\s])+))?(ORDER\\s+BY\\s+(?<order>[\\S\\s]+))?";
+        static string pageSql = @"SELECT {0} FROM 
+                                {1}
+                                INNER JOIN
+                                (SELECT ROW_NUMBER() OVER( ORDER BY {2}) AS ROWID,{3} AS TEMP_IDENTITY  FROM 
+                                  {1} 
+                                  {4}) AS TEMP_PAGE_TABLE ON TEMP_PAGE_TABLE.TEMP_IDENTITY={3}
+                                    WHERE TEMP_PAGE_TABLE.ROWID BETWEEN {5} AND {6} ORDER BY TEMP_PAGE_TABLE.ROWID";
+        static string pageSql2 = @" SELECT *  FROM 
+                            (SELECT ROW_NUMBER() OVER( ORDER BY {1}) AS {2},{3} 
+                                    FROM {5} 
+                                    {6}) AS TEMP_TABLE 
+                                WHERE {2} BETWEEN {0} AND {4} ORDER BY {2}  ";
+        internal static string BuildPageSql(string sql, Page.PageView view,string pk)
+        {
+            var sqlDic = GetSqlRegex(sql);
+            string selectColums = sqlDic["col"];
+            string tablename = sqlDic["tname"];
+            string wheresql = sqlDic["where"];
+            string ordersql = sqlDic["order"];
+                string viewOrder= view.GetSqlOrder();
+                if (!string.IsNullOrEmpty(viewOrder))
+                    ordersql = viewOrder;
+                return string.Format(pageSql, selectColums, tablename, ordersql, pk, wheresql,  view.PageIndex * view.PageSize, (view.PageIndex+1) * view.PageSize);
+        }
+
+
+        private static Dictionary<string, string> GetSqlRegex(string sql)
+        {
+            sql = new Regex("--[\\s\\S]+?\\r\\n|--[\\s\\S]+?$").Replace(sql, "\r\n"); //去注释
+            List<string> listReplace= new List<string>();
+            //替换到所有子查询为/sign:{0}/
+            sql = new Regex("(\\([^\\(\\)]*select[^\\(\\)]*((?'TNGroup'\\()[^\\(\\)]*((?'-TNGroup'\\))[^\\(\\)]*)*)*(?(TNGroup)(?!))\\))"
+                , RegexOptions.IgnoreCase).Replace(sql,
+                new MatchEvaluator(delegate(Match m)
+            {
+                listReplace.Add(m.Value);
+                return string.Format("/sign:{0}/", listReplace.Count - 1);
+            }));
             Regex sqlRegex = new Regex(sqlRegexString, RegexOptions.IgnoreCase);
             Match match = sqlRegex.Match(sql);
             if (!match.Success)
@@ -267,40 +314,25 @@ namespace SmiteRepository.Sqlserver
             string tablename = match.Groups["tname"].Value;
             string wheresql = match.Groups["where"].Value;
             string ordersql = match.Groups["order"].Value;
-            wheresql = string.IsNullOrWhiteSpace(wheresql) ? string.Empty : " WHERE " + wheresql;
-            string viewOrder = view.GetSqlOrder();
-            if (!string.IsNullOrEmpty(viewOrder))
-                ordersql = viewOrder;
-
-
-            string pageSql = string.Format(" SELECT TOP {0} {3}  FROM (SELECT ROW_NUMBER() OVER({1}) AS {2},{3} FROM {5} {6}) AS TEMP_TABLE  WHERE {2} >{4} ORDER BY {2}  ",
-                view.PageSize, view.GetSqlOrder(), Define.MYROWID,selectColums, view.PageIndex * view.PageSize,tablename,wheresql);
-            return pageSql;
-        }
-        static string pageCountSql = " SELECT Count(1) AS COUNT_ROW FROM {0} {1}";
-        static string sqlRegexString = "select(?<col>((?!select|from)[\\S\\s])+(((?'Open'select)((?!select|from)[\\S\\s])+)+((?'-Open'from)((?!select|from)[\\S\\s])+)+)*(?(Open)(?!)))from\\s+(?<tname>(?(\\()(\\([^\\(\\)]*((?'TNGroup'\\()[^\\(\\)]*((?'-TNGroup'\\))[^\\(\\)]*)*)*(?(TNGroup)(?!))\\))|\\S+)(\\s+AS)*((?!WHERE)[\\S\\s])*)(WHERE\\s+(?<where>((?!ORDER\\s+BY)[\\S\\s])+))?(ORDER\\s+BY\\s+(?<order>[\\S\\s]+))?";
-        static string pageSql = @"SELECT TOP {5} {0} FROM 
-                                {1}
-                                INNER JOIN
-                                (SELECT ROW_NUMBER() OVER( ORDER BY {2}) AS ROWID,{3} AS TEMP_IDENTITY  FROM 
-                                  {1} 
-                                  {4}) AS TEMP_PAGE_TABLE ON TEMP_PAGE_TABLE.TEMP_IDENTITY={3} WHERE TEMP_PAGE_TABLE.ROWID>{6} ORDER BY TEMP_PAGE_TABLE.ROWID";
-        internal static string BuildPageSql(string sql, Page.PageView view,string pk)
-        {
-            Regex sqlRegex = new Regex(sqlRegexString, RegexOptions.IgnoreCase);
-            Match match = sqlRegex.Match(sql);
-            if (!match.Success) {
-              throw  new ORMException("SQL解析错误或解析不了，请确认你的SQL正解", sql);
+            for (int i = 0; i < listReplace.Count; i++)
+            {
+                string replaceStr=string.Format("/sign:{0}/", i);
+                selectColums = selectColums.Replace(replaceStr, listReplace[i]);
+                tablename = tablename.Replace(replaceStr, listReplace[i]);
+                wheresql = wheresql.Replace(replaceStr, listReplace[i]);
             }
-                string selectColums = match.Groups["col"].Value;
-                string tablename = match.Groups["tname"].Value;
-                string wheresql = match.Groups["where"].Value;
-                string ordersql = match.Groups["order"].Value;
-                wheresql = string.IsNullOrWhiteSpace(wheresql) ? string.Empty : " WHERE " + wheresql;
-                string viewOrder= view.GetSqlOrder();
-                if (!string.IsNullOrEmpty(viewOrder))
-                    ordersql = viewOrder;
-                return string.Format(pageSql, selectColums, tablename, ordersql, pk, wheresql, view.PageSize, view.PageIndex * view.PageSize);
+            if (!string.IsNullOrWhiteSpace(wheresql))
+            {
+
+                wheresql = " WHERE " + wheresql;
+            }
+
+            Dictionary<string, string> dic = new Dictionary<string, string>();
+            dic.Add("col", selectColums);
+            dic.Add("tname", tablename);
+            dic.Add("where", wheresql);
+            dic.Add("order", ordersql);
+            return dic;
 
         }
     }

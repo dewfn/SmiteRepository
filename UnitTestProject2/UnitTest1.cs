@@ -185,8 +185,8 @@ namespace UnitTestProject2
             PageView  v=new PageView();
             v.PageIndex=0;
             v.PageSize=3;
-            v.SortName="Id";
-            v.SortOrder="desc";
+            v.SortName = "Id";
+            v.SortOrder = "desc";
 
             var r = orm.GetPage(v,w=> w.Keys.Contains("keys"),null);
             Assert.IsTrue(r .Total==3&&r.DataList.Count==3);

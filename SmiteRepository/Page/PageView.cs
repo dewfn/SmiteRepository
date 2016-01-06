@@ -48,8 +48,8 @@ namespace SmiteRepository.Page
 
         public virtual string GetSqlOrder()
         {
-            if (!string.IsNullOrEmpty(SortName) && !string.IsNullOrEmpty(SortOrder))
-                return string.Format("ORDER BY {0} {1} ", SortName, SortOrder);
+            if (!string.IsNullOrEmpty(SortName))
+                return string.Format(" {0} {1} ", SortName, SortOrder);
             return string.Empty;
         }
     }
