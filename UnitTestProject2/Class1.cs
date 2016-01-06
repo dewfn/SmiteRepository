@@ -56,12 +56,12 @@ public string Classname
             public PagedList<viewT> Get(PageView v)
             {
                 string a="";
-                PagedList<viewT> p = base.PageGet<viewT>(v, "  select a.age,a.keys,z.class as classname from a_testzhu z left join  a_testage a on z.keys=a.keys where a.age=@Age",new { Age= 8995 });
+                PagedList<viewT> p = base.PageGet<viewT>(v, "select a.age,a.keys,z.class as classname from a_testzhu z left join  a_testage a on z.keys=a.keys where a.age=@Age",new { Age= 8995 });
                 return p;
             }
             public List<viewT> Get()
             {
-                List<viewT> p = base.Query<viewT>("select a.age,a.keys,z.class as classname from a_testzhu z left join  a_testage a on z.keys=a.keys where a.id>7000" );
+                List<viewT> p = base.Query<viewT>("select a.age,a.keys  from  a_testage a where a.id>7000" );
                 return p;
             }
             public void Exec() { 
