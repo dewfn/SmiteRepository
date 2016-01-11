@@ -96,7 +96,7 @@ namespace SmiteRepository
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        long Insert(TEntity entity);
+        long Add(TEntity entity);
         /// <summary>
         /// 求某字段最大值
         /// </summary>

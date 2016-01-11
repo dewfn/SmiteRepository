@@ -118,7 +118,7 @@ namespace SmiteRepository.Oracle
              return EntityORASQLBuilder.BuildInsertSql(metadeta, entity.PropertyChangedList);
          }
 
-         public long Insert(TEntity entity) 
+         public long Add(TEntity entity) 
          {
              EntityMeta meta = EntityReflect.GetDefineInfoFromType(typeof(TEntity));
             

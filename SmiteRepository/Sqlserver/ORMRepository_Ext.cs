@@ -167,7 +167,7 @@ namespace SmiteRepository.Sqlserver
 #endif
         }
 
-        public long Insert(TEntity entity)
+        public long Add(TEntity entity)
         {
             string sql = this.GetInsertChangeColumnsSql(entity, meta);
             var method = meta.ACustomTableName_Insert; //分表用，取自定义表名

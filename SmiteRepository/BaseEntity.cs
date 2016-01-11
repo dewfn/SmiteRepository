@@ -8,7 +8,7 @@ using System.Text;
 namespace SmiteRepository
 {
     /// <summary>
-    /// 暂时没有对更新和插入操作做 线程安全，可改
+    /// Safety编译的支持线程安全
     /// </summary>
     public abstract class BaseEntity
     {

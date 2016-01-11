@@ -134,7 +134,7 @@ namespace SmiteRepository.Mysql
 #endif
         }
 
-        public long Insert(TEntity entity)
+        public long Add(TEntity entity)
         {
             EntityMeta meta = EntityReflect.GetDefineInfoFromType(typeof(TEntity));
 

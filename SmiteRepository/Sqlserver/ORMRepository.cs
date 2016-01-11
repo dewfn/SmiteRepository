@@ -122,7 +122,7 @@ namespace SmiteRepository.Sqlserver
              return EntityMSSQLBuilder.BuildInsertSql(metadeta, entity.PropertyChangedList);
          }
 
-         public long Insert(TEntity entity) 
+         public long Add(TEntity entity) 
          {
             
              string sql = this.GetInsertChangeColumnsSql(entity,meta);

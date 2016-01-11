@@ -133,7 +133,7 @@ namespace UnitTestProject2
             yy.Keys = "keys99";
             //yy.Sex = 3;
             yy.Class = "fdk";
-            long r = orm.Insert(yy);
+            long r = orm.Add(yy);
             Assert.IsTrue(r>0);
         }
         [TestMethod]
