@@ -55,11 +55,6 @@
     <Compile Include="Extansions\ExecSqlEvent.cs" />
     <Compile Include="Extansions\RegisterORM.cs" />
     <Compile Include="Identity.cs" />
-    <Compile Include="Mysql\BaseMysqlRepository.cs" />
-    <Compile Include="Mysql\EntityMYSQLBuilder.cs" />
-    <Compile Include="Mysql\MGeneralRepository.cs" />
-    <Compile Include="Mysql\MysqlDBHelper.cs" />
-    <Compile Include="Mysql\ORMMysqlRepository.cs" />
     <Compile Include="Oracle\BaseOracleRepository.cs" />
     <Compile Include="Oracle\EntityORASQLBuilder.cs" />
     <Compile Include="Oracle\OGeneralRepository.cs" />
