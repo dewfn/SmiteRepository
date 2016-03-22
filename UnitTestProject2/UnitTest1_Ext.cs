@@ -19,7 +19,7 @@ namespace UnitTestProject2
     {
 
         public UnitTest1_Ext()
-            : base("Data Source=192.168.4.185;Initial Catalog=master;Persist Security Info=True;User ID=sa;Password=wulin!111111")
+            : base("Data Source=192.168.23.157;Initial Catalog=Test;Persist Security Info=True;User ID=sa;Password=123456;pooling=true;min pool size=5;max pool size=5")
         {
            
             RegisterORM.Register_CustomTableNameToDelete<A_testyy>(where => where.Id > 3,
@@ -95,7 +95,7 @@ namespace UnitTestProject2
         public void TestORM_Avg()
         {
 
-            var k = orm.Avg<int>((Display, F) => Display(F.Sex), where => where.Yy == "sdfkjkh" && where.Sex >0);
+            var k = orm.Avg<int>((Display, F) => Display(F.Sex), where => where.Yy == "two99777" && where.Sex >0);
             Assert.AreEqual(k, 1);
         }
         [TestMethod]
@@ -150,7 +150,7 @@ namespace UnitTestProject2
         [TestMethod]
         public void TestORM_Count()
         {
-            var k = orm.Count(where => where.Yy.EndsWith("sdfkjkh") && where.Sex > 0);
+            var k = orm.Count(where => where.Yy.EndsWith("lkjl") && where.Sex > 0);
             Assert.IsTrue(k==1);
         }
         [TestMethod]

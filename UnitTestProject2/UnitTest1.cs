@@ -19,7 +19,7 @@ namespace UnitTestProject2
     {
         
         public UnitTest1()
-            : base("Data Source=192.168.4.185;Initial Catalog=master;Persist Security Info=True;User ID=sa;Password=wulin!111111")
+            : base("Data Source=192.168.23.157;Initial Catalog=Test;Persist Security Info=True;User ID=sa;Password=123456;pooling=true;min pool size=5;max pool size=5")
         {
             orm = base.For<A_testyy>();
             ExecSqlHandle.RegisterExecHandle(delegate(string sql,object @params){
@@ -140,7 +140,7 @@ namespace UnitTestProject2
         public void TestDelete()
         {
             int id = 3;
-            int r = orm.Delete(where => where.Id >id);
+            int r = orm.Delete(w => w.Id == 3);
             Assert.IsTrue(r>-1);
         }
         //[TestMethod]

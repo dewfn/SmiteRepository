@@ -75,7 +75,7 @@ namespace UnitTestProject2
 
             string s = null;
             string klj = string.Format("{0}", s);
-            string con = "Data Source=192.168.4.185;Initial Catalog=CRM;Persist Security Info=True;User ID=sa;Password=wulin!111111;pooling=true;min pool size=5;max pool size=5";
+            string con = "Data Source=192.168.23.157;Initial Catalog=Test;Persist Security Info=True;User ID=sa;Password=123456;pooling=true;min pool size=5;max pool size=5";
             Class1 c = new Class1(con);
             PageView p = new PageView(0, 100, "", "", 0);
             p.Primary = "cpi.Clue_guid";

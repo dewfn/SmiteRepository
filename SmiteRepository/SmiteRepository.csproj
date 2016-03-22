@@ -54,7 +54,6 @@
     <Compile Include="OrderByExtensions.cs" />
     <Compile Include="Extansions\ExecSqlEvent.cs" />
     <Compile Include="Extansions\RegisterORM.cs" />
-    <Compile Include="Identity.cs" />
     <Compile Include="Oracle\BaseOracleRepository.cs" />
     <Compile Include="Oracle\EntityORASQLBuilder.cs" />
     <Compile Include="Oracle\OGeneralRepository.cs" />
