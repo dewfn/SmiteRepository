@@ -453,8 +453,8 @@ namespace SmiteRepository.Sqlserver
                 orderArray = item.Split('.');
                 fileColumn = meta.Columns.Find(x => x.FieldName == orderArray[0].Trim());
                 if (fileColumn == null)
-                    throw new ORMException(string.Format("映射列名[{0}]找不到", orderArray[0]));
-                showFields.Append(fileColumn.ColumnName).Append(" "+orderArray[1].Replace("()","")).Append(",");
+                    throw new ORMException(string.Format("映射列名[{0}]找不到", orderArray[0].Trim()));
+                showFields.Append(fileColumn.ColumnName).Append(" ").Append(orderArray[1].Replace("()", "")).Append(",");
             }
 
             return showFields.Length > 0 ? showFields.Remove(showFields.Length - 1, 1).ToString() : string.Empty;

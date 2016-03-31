@@ -150,7 +150,7 @@ namespace SmiteRepository.Sqlserver
             {
                 if (meta.Columns[i].Identity) continue;
 
-                if (meta.Columns[i].Nullable && !list.Contains(meta.Columns[i].FieldName)) //列可为空，并且没有设置过值，则不提交数据库
+                if ( !list.Contains(meta.Columns[i].FieldName)) //列可为空，并且没有设置过值，则不提交数据库
                     continue;
                 if (j > 0)
                 {
@@ -164,7 +164,7 @@ namespace SmiteRepository.Sqlserver
             {
                 if (meta.Columns[i].Identity ) continue;
 
-                if (meta.Columns[i].Nullable && !list.Contains(meta.Columns[i].FieldName)) //列可为空，并且没有设置过值，则不提交数据库
+                if ( !list.Contains(meta.Columns[i].FieldName)) //列可为空，并且没有设置过值，则不提交数据库
                     continue;
 
 

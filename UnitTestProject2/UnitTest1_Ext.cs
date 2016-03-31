@@ -19,7 +19,7 @@ namespace UnitTestProject2
     {
 
         public UnitTest1_Ext()
-            : base("Data Source=192.168.23.157;Initial Catalog=Test;Persist Security Info=True;User ID=sa;Password=123456;pooling=true;min pool size=5;max pool size=5")
+            : base("Data Source=.;Initial Catalog=Test;Persist Security Info=True;User ID=sa;Password=123456;pooling=true;min pool size=5;max pool size=5")
         {
            
             RegisterORM.Register_CustomTableNameToDelete<A_testyy>(where => where.Id > 3,

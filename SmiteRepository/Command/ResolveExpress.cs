@@ -1,5 +1,6 @@
 ﻿using SmiteRepository.ORMapping;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
@@ -307,7 +308,7 @@ namespace SmiteRepository.Command
                     {
                         List<string> SetInPara = new List<string>();
                         int i = 1;
-                        foreach (var item in (Value as IEnumerable<object>))
+                        foreach (var item in (Value as IEnumerable))
                         {
                             string Name_para = string.Format("{0}_InParameter{1}", Value.GetHashCode().ToString(), i);
                             string Key = SetArgument(Name_para, item);
