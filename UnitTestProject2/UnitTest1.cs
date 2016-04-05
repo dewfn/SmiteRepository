@@ -62,7 +62,8 @@ namespace UnitTestProject2
             
            // var k =orm.FindAll(x => klj.Contains(x.Classname) && "" == "");
            // var kk= orm.FindAll(x => "ffffff".Contains(x.Classname) && "" == "");
-            var kkk = orm.FindAll(x => x.Keys.Contains("fdfdf"));
+           var kkk = orm.FindAll(x => x.Keys.EndsWith("key"));
+          //  var kkk = orm.FindAll(x => lf.Contains(x.Id));
             Assert.IsNotNull(kkk);
         }
         [TestMethod]

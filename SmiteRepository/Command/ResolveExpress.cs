@@ -178,17 +178,15 @@ namespace SmiteRepository.Command
 
             var MethodCall = expression as MethodCallExpression;
             var MethodName = MethodCall.Method.Name;
-
-
             switch (MethodName)
             {
                 case "StartsWith":
-                    return Like(MethodCall, "(CAST({0} AS VARCHAR)+'%')");
+                    return Like(MethodCall, "({0}+'%')");
                 case "EndsWith":
-                    return Like(MethodCall, "('%'+CAST({0} AS VARCHAR))");
+                    return Like(MethodCall, "('%'+{0})");
                 case "Contains":
                     if (MethodCall.Object != null && MethodCall.Object.Type == typeof(string))
-                        return Like(MethodCall, "('%'+CAST({0} AS VARCHAR)+'%')");
+                        return Like(MethodCall, "('%'+{0}+'%')");
                     else
                         return In(MethodCall, value);
                 //case "ContainsKey":
@@ -203,6 +201,30 @@ namespace SmiteRepository.Command
                 default:
                     throw new ORMException(string.Format("不支持{0}方法的查找！", MethodName));
             }
+
+            //switch (MethodName)
+            //{
+            //    case "StartsWith":
+            //        return Like(MethodCall, "(CAST({0} AS VARCHAR)+'%')");
+            //    case "EndsWith":
+            //        return Like(MethodCall, "('%'+CAST({0} AS VARCHAR))");
+            //    case "Contains":
+            //        if (MethodCall.Object != null && MethodCall.Object.Type == typeof(string))
+            //            return Like(MethodCall, "('%'+CAST({0} AS VARCHAR)+'%')");
+            //        else
+            //            return In(MethodCall, value);
+            //    //case "ContainsKey":
+            //    //    if (MethodCall.Object != null && MethodCall.Object.Type == typeof(string))
+            //    //        return Like(MethodCall, "CONCAT('%',{0},'%')");
+            //    //    else
+            //    //        return In(MethodCall, value);                    
+            //    case "Count":
+            //        return Len(MethodCall, value, expressiontype.Value);
+            //    case "LongCount":
+            //        return Len(MethodCall, value, expressiontype.Value);
+            //    default:
+            //        throw new ORMException(string.Format("不支持{0}方法的查找！", MethodName));
+            //}
 
             //switch (MethodName)
             //{

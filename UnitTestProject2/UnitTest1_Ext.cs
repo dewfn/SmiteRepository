@@ -91,13 +91,7 @@ namespace UnitTestProject2
 
         IORMRepository<A_testyy> orm;
        
-        [TestMethod]
-        public void TestORM_Avg()
-        {
-
-            var k = orm.Avg<int>((Display, F) => Display(F.Sex), where => where.Yy == "two99777" && where.Sex >0);
-            Assert.AreEqual(k, 1);
-        }
+      
         [TestMethod]
         public void TestORM_Find_Order()
         { 
@@ -125,7 +119,13 @@ namespace UnitTestProject2
             var k = orm.Find(where => where.Id > 1, (Display, F) => Display(F.Keys, F.Class));
             Assert.IsNotNull(k);
         }
-       
+        [TestMethod]
+        public void TestORM_Avg()
+        {
+
+            var k = orm.Avg<int>((Display, F) => Display(F.Sex), where => where.Yy == "two99777" && where.Sex > 0);
+            Assert.AreEqual(k, 1);
+        }
         [TestMethod]
         public void TestORM_Max()
         {
