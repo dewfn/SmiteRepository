@@ -3,23 +3,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 namespace SmiteRepository.ORMapping
 {
     internal class EntityReflect
     {
         private static Dictionary<Type, EntityMeta> _cache = new Dictionary<Type, EntityMeta>();
-        private static readonly object lockobject = new object();
+        //private static readonly object lockobject = new object();
+        private static ReaderWriterLock _rwlock = new ReaderWriterLock();
         public static EntityMeta GetDefineInfoFromType(Type type)
         {
             EntityMeta tdefine = null;
             string typeKey = type.FullName;
-            lock (lockobject)
+
+
+
+            _rwlock.AcquireReaderLock(100);
+
+            if (_cache.TryGetValue(type, out tdefine))
             {
-                if (_cache.TryGetValue(type, out tdefine))
-                {
-                    return tdefine;
-                }
+                _rwlock.ReleaseReaderLock();
+                return tdefine;
             }
+
+            _rwlock.ReleaseReaderLock();
 
             tdefine = new EntityMeta();
 
@@ -72,12 +79,15 @@ namespace SmiteRepository.ORMapping
 
                 }
             }
-            lock (lockobject)
+
+            _rwlock.AcquireWriterLock(100);
+            if (!_cache.ContainsKey(type))
             {
-
                 _cache.Add(type, tdefine);
-
             }
+            _rwlock.ReleaseWriterLock();
+
+
             return tdefine;
         }
     }
