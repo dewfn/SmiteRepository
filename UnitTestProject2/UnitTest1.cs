@@ -19,7 +19,7 @@ namespace UnitTestProject2
     {
         
         public UnitTest1()
-            : base("Data Source=192.168.4.185;Initial Catalog=master;Persist Security Info=True;User ID=sa;Password=wulin!111111")
+            : base("Data Source=.;Initial Catalog=Test;Persist Security Info=True;User ID=sa;Password=123456;pooling=true;min pool size=5;max pool size=5")
         {
             orm = base.For<A_testyy>();
             ExecSqlHandle.RegisterExecHandle(delegate(string sql,object @params){
@@ -38,6 +38,13 @@ namespace UnitTestProject2
             Assert.AreEqual(k, 6);
         }
         [TestMethod]
+        public void TestORM_Find_Order()
+        {
+            A_testyy y = new A_testyy();
+            var k = orm.Find(where => where.Id > 1, (Display, F) => Display(F.Keys, F.Class), (Order, F) => Order(F.Id.Desc(), F.Yy.Asc()));
+            Assert.IsNotNull(k);
+        } 
+        [TestMethod]
         public void TestORM_Find()
         { 
             A_testyy y=new A_testyy();
@@ -55,7 +62,8 @@ namespace UnitTestProject2
             
            // var k =orm.FindAll(x => klj.Contains(x.Classname) && "" == "");
            // var kk= orm.FindAll(x => "ffffff".Contains(x.Classname) && "" == "");
-            var kkk = orm.FindAll(x => x.Keys.Contains("fdfdf"));
+           var kkk = orm.FindAll(x => x.Keys.EndsWith("key"));
+          //  var kkk = orm.FindAll(x => lf.Contains(x.Id));
             Assert.IsNotNull(kkk);
         }
         [TestMethod]
@@ -126,14 +134,14 @@ namespace UnitTestProject2
             yy.Keys = "keys99";
             //yy.Sex = 3;
             yy.Class = "fdk";
-            long r = orm.Insert(yy);
+            long r = orm.Add(yy);
             Assert.IsTrue(r>0);
         }
         [TestMethod]
         public void TestDelete()
         {
             int id = 3;
-            int r = orm.Delete(where => where.Id >id);
+            int r = orm.Delete(w => w.Id == 3);
             Assert.IsTrue(r>-1);
         }
         //[TestMethod]
@@ -178,8 +186,8 @@ namespace UnitTestProject2
             PageView  v=new PageView();
             v.PageIndex=0;
             v.PageSize=3;
-            v.SortName="Id";
-            v.SortOrder="desc";
+            v.SortName = "Id";
+            v.SortOrder = "desc";
 
             var r = orm.GetPage(v,w=> w.Keys.Contains("keys"),null);
             Assert.IsTrue(r .Total==3&&r.DataList.Count==3);

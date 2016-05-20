@@ -1,5 +1,6 @@
 ﻿using ConsoleApplication3;
 using SmiteRepository;
+using SmiteRepository.Page;
 using SmiteRepository.Sqlserver;
 using System;
 using System.Collections.Generic;
@@ -70,11 +71,31 @@ namespace UnitTestProject2
         public delegate string CreateTableNameDelegate<T>(T o);
 
         static void Main() {
-         
 
 
-            string con = "Data Source=192.168.4.185;Initial Catalog=master;Persist Security Info=True;User ID=sa;Password=wulin!111111";
+            string s = null;
+            string klj = string.Format("{0}", s);
+            string con = "Data Source=192.168.23.157;Initial Catalog=Test;Persist Security Info=True;User ID=sa;Password=123456;pooling=true;min pool size=5;max pool size=5";
             Class1 c = new Class1(con);
+            PageView p = new PageView(0, 100, "", "", 0);
+            p.Primary = "cpi.Clue_guid";
+            //p.SortName = "cpi.Clue_Guid";
+           var ll= c.TestGet(p);
+            //c.Get();  
+
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    Task.Factory.StartNew(new Action(delegate()
+            //    {
+            //       // while (true)
+            //       // {
+
+            //            c.Get();
+            //       // }
+
+            //    }));
+            //}
+           return;
 
 
             Dictionary<string, object> dic = new Dictionary<string, object>();
@@ -100,7 +121,7 @@ namespace UnitTestProject2
 
 
             var ss = orm.FindAll(w => w.Testname=="nihao");
-            var ss2 = orm.FindAll(w => w.Id > 7000);
+            var ss2 = orm.FindAll(w => w.Id > 7000,(D,F)=>D(F.Age,F.Keys));
 
 
             A_testage y = new A_testage();

@@ -7,7 +7,7 @@ namespace SmiteRepository.Extansions
 {
    public delegate string ExecHandleDelegate(string Sql, object Params);
     /// <summary>
-    /// 启动时注册，不支持线程安全
+   /// 注册所有SQL执行前事件，不支持线程安全，所以启动时注册
     /// </summary>
    public class ExecSqlHandle
    {

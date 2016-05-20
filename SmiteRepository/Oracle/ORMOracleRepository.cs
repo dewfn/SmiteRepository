@@ -19,11 +19,18 @@ namespace SmiteRepository.Oracle
     public class ORMOracleRepository<TEntity> : IORMRepository<TEntity> where TEntity : BaseEntity, new()
      {
 
-        public ORMOracleRepository(string connectionString)
+        internal ORMOracleRepository(string connectionString, EntityMeta Meta)
          {
              this.connectionString = connectionString;
+             meta = Meta;
          }
+        public ORMOracleRepository(string connectionString)
+        {
+            meta=EntityReflect.GetDefineInfoFromType(typeof(TEntity));
+            this.connectionString = connectionString; 
+        }
          private string connectionString;
+         EntityMeta meta;
 
 
 
@@ -111,7 +118,7 @@ namespace SmiteRepository.Oracle
              return EntityORASQLBuilder.BuildInsertSql(metadeta, entity.PropertyChangedList);
          }
 
-         public long Insert(TEntity entity) 
+         public long Add(TEntity entity) 
          {
              EntityMeta meta = EntityReflect.GetDefineInfoFromType(typeof(TEntity));
             
@@ -127,20 +134,49 @@ namespace SmiteRepository.Oracle
 
          public TEntity Find(Expression<Predicate<TEntity>> where) 
          {
-             EntityMeta meta = EntityReflect.GetDefineInfoFromType(typeof(TEntity));
              string showFields = meta.SelectStringColumns;
-             List<TEntity> list = FindAll(where, showFields, meta);
-             return list.FirstOrDefault();
+             return Find(where, showFields, null);
          }
          public TEntity Find(Expression<Predicate<TEntity>> where, Expression<Func<Fileds.DisplaysMethod, TEntity, Fileds>> fields)
          {
-             EntityMeta meta = EntityReflect.GetDefineInfoFromType(typeof(TEntity));
              string showFields = GetShowFields(fields, meta);
-             List<TEntity> list = FindAll(where, showFields, meta);
+             return Find(where, showFields, null);
 
-             return list.FirstOrDefault();
          }
+         public TEntity Find(Expression<Predicate<TEntity>> where, Expression<Func<Fileds.DisplaysMethod, TEntity, Fileds>> fields, Expression<Func<Fileds.OrderByMethod, TEntity, Fileds>> order_fields)
+         {
+             string showFields = GetShowFields(fields, meta);
+             string orderFields = GetOrderByFields(order_fields, meta);
+             return Find(where, showFields, orderFields);
+         }
+         private TEntity Find(Expression<Predicate<TEntity>> where, string showFields, string orderFields)
+         {
+             string whereSql = string.Empty;
+             DynamicParameters param = null;
+             Dictionary<string, object> dicArgument = null;
+             string sql = string.Empty;
+             if (where != null)
+             {
 
+                 ResolveExpress r = new ResolveExpress(where, meta);
+                 whereSql = " WHERE " + r.SqlWhere;
+                 dicArgument = r.Argument;
+                 param = new DynamicParameters();
+                 foreach (var arg in r.Argument)
+                 {
+                     param.Add(arg.Key, arg.Value);
+                 }
+
+             }
+             
+                 if (!string.IsNullOrEmpty(orderFields))
+                     orderFields = " ORDER BY " + orderFields;
+                 sql = string.Format("SELECT TOP 1 {0} from {1} {2} {3}", showFields, meta.TableName, whereSql, orderFields);
+             
+
+
+             return OracleDBHelper.Query<TEntity>(connectionString, sql, param).FirstOrDefault();
+         }
          public List<TEntity> FindAll(Expression<Predicate<TEntity>> where) 
          {
              EntityMeta meta = EntityReflect.GetDefineInfoFromType(typeof(TEntity));
@@ -268,7 +304,37 @@ namespace SmiteRepository.Oracle
              return showFields.Length > 0 ? showFields.Remove(showFields.Length - 1, 1).ToString() : string.Empty;
          }
 
+         private string GetOrderByFields(Expression fields, EntityMeta meta)
+         {
+             if (fields == null)
+                 return meta.SelectStringColumns;
+             if (!(fields is LambdaExpression))
+                 throw new ORMException("传入排序字段表达式错误!");
+             LambdaExpression lambda = fields as LambdaExpression;
+             string bodyStr = lambda.Body.ToString();
 
+             string args = lambda.Parameters[1].Name + ".";
+             bodyStr = bodyStr.Replace(')', ' ').Replace('}', ' ').Replace('(', ' ');
+             var fieldArray = bodyStr.Split(',').Distinct();
+             EntityColumnMeta fileColumn;
+             StringBuilder showFields = new StringBuilder();
+             string[] orderArray;
+             foreach (var fieldFilter in fieldArray)
+             {
+                 string item = fieldFilter.Trim();
+                 int argIndex = item.IndexOf(args);
+                 if (argIndex == -1)
+                     continue;
+                 item = item.Substring(argIndex + args.Length);
+                 orderArray = item.Split('.');
+                 fileColumn = meta.Columns.Find(x => x.FieldName == orderArray[0]);
+                 if (fileColumn == null)
+                     throw new ORMException(string.Format("映射列名[{0}]找不到", item));
+                 showFields.Append(fileColumn.ColumnName).Append(orderArray[1].Replace("()", "")).Append(",");
+             }
+
+             return showFields.Length > 0 ? showFields.Remove(showFields.Length - 1, 1).ToString() : string.Empty;
+         }
          protected TResult ExecOne<TResult>(Expression fields, Expression where, string execType)
          {
              string whereSql = string.Empty;

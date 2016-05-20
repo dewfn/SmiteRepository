@@ -52,6 +52,13 @@ namespace SmiteRepository
         /// <returns></returns>
         TEntity Find(Expression<Predicate<TEntity>> where, Expression<Func<Fileds.DisplaysMethod, TEntity, Fileds>> fields);
         /// <summary>
+        /// 根据条件查找一个符合条件的数据
+        /// </summary>
+        /// <param name="where"></param>
+        /// <param name="fields">可设置需要显示的字段</param>
+        /// <returns></returns>
+        TEntity Find(Expression<Predicate<TEntity>> where, Expression<Func<Fileds.DisplaysMethod, TEntity, Fileds>> fields, Expression<Func<Fileds.OrderByMethod, TEntity, Fileds>> orderFields);
+        /// <summary>
         /// 根据条件查找符合条件的数据集
         /// </summary>
         /// <returns></returns>
@@ -89,7 +96,7 @@ namespace SmiteRepository
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        long Insert(TEntity entity);
+        long Add(TEntity entity);
         /// <summary>
         /// 求某字段最大值
         /// </summary>

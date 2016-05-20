@@ -31,6 +31,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Safety|AnyCPU'">
+    <OutputPath>bin\Safety\</OutputPath>
+    <DefineConstants>TRACE;Safety</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="mysql.data, Version=6.8.3.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -46,14 +50,10 @@
   <ItemGroup>
     <Compile Include="BaseEntity.cs" />
     <Compile Include="Dapper\SqlMapper.cs" />
+    <Compile Include="DataParameter.cs" />
+    <Compile Include="OrderByExtensions.cs" />
     <Compile Include="Extansions\ExecSqlEvent.cs" />
     <Compile Include="Extansions\RegisterORM.cs" />
-    <Compile Include="Identity.cs" />
-    <Compile Include="Mysql\BaseMysqlRepository.cs" />
-    <Compile Include="Mysql\EntityMYSQLBuilder.cs" />
-    <Compile Include="Mysql\MGeneralRepository.cs" />
-    <Compile Include="Mysql\MysqlDBHelper.cs" />
-    <Compile Include="Mysql\ORMMysqlRepository.cs" />
     <Compile Include="Oracle\BaseOracleRepository.cs" />
     <Compile Include="Oracle\EntityORASQLBuilder.cs" />
     <Compile Include="Oracle\OGeneralRepository.cs" />

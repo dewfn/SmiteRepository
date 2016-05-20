@@ -61,9 +61,9 @@ namespace SmiteRepository.Sqlserver
                 {
                     EntityMeta meta = EntityReflect.GetDefineInfoFromType(typeof(TEntity));
                     if (meta.IsCustomTableName)
-                        rrmRe = new ORMRepository_Ext<TEntity>(ConnectionString);
+                        rrmRe = new ORMRepository_Ext<TEntity>(ConnectionString,meta);
                     else
-                        rrmRe = new ORMRepository<TEntity>(ConnectionString);
+                        rrmRe = new ORMRepository<TEntity>(ConnectionString,meta);
                     dicORM.Add(typeof(TEntity), new ORMTEntity(rrmRe));
                    
                 }
@@ -80,8 +80,7 @@ namespace SmiteRepository.Sqlserver
         /// <param name="param"></param>
         /// <returns></returns>
         protected PagedList<T> PageGet<T>(PageView view, string sql, object param, int? timeOut = null) where T : class,new()
-        {
-            string sqlOrder = view.GetSqlOrder();
+        { 
 
             PagedList<T> pList = new PagedList<T>();
 

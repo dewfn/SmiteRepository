@@ -19,7 +19,7 @@ namespace UnitTestProject2
     {
 
         public UnitTest1_Ext()
-            : base("Data Source=192.168.4.185;Initial Catalog=master;Persist Security Info=True;User ID=sa;Password=wulin!111111")
+            : base("Data Source=.;Initial Catalog=Test;Persist Security Info=True;User ID=sa;Password=123456;pooling=true;min pool size=5;max pool size=5")
         {
            
             RegisterORM.Register_CustomTableNameToDelete<A_testyy>(where => where.Id > 3,
@@ -44,9 +44,9 @@ namespace UnitTestProject2
                 {
                     string yy = SqlParams[0].ToString();
                     if (yy.StartsWith("two"))
-                        return new string[] { "a_testyy_two" };
+                      return new string[] { "a_testyy_two" };
                     else
-                        return new string[] { "a_testyy" };
+                         return new string[] { "a_testyy" }; 
                 });
             RegisterORM.Register_CustomTableNameToSelect<A_testyy>(where => where.Yy == "two3232" && where.Sex > 1,
                delegate(object[] SqlParams, A_testyy Entity)
@@ -73,7 +73,15 @@ namespace UnitTestProject2
                   //    return new string[] { "a_testyy_two" };
                       return new string[] { "a_testyy_two", "a_testyy" };
               });
-
+            RegisterORM.Register_CustomTableNameToSelect<A_testyy>(where => where.Id > 3,
+                delegate(object[] SqlParams, A_testyy Entity)
+                {
+                    int Id = (int)SqlParams[0];
+                    if (Id == 1)
+                        return new string[] { "a_testyy_two", "a_testyy" };
+                    else
+                        return new string[] { "a_testyy" };
+                });
             ExecSqlHandle.RegisterExecHandle(delegate(string sql,object @params){
                 return null;
             },true);
@@ -83,21 +91,14 @@ namespace UnitTestProject2
 
         IORMRepository<A_testyy> orm;
        
+      
         [TestMethod]
-        public void TestORM_Avg()
-        {
-
-            var k = orm.Avg<int>((Display, F) => Display(F.Sex), where => where.Yy == "sdfkjkh" && where.Sex >0);
-            Assert.AreEqual(k, 1);
-        }
-        [TestMethod]
-        public void TestORM_Find()
+        public void TestORM_Find_Order()
         { 
             A_testyy y=new A_testyy();
-            var k = orm.Find(where => where.Sex == 8, (Display, F) => Display(F.Keys));
+            var k = orm.Find(where => where.Id>1, (Display, F) => Display(F.Keys, F.Class), (Order, F) => Order(F.Id.Desc(), F.Yy.Asc()));
             Assert.IsNotNull(k);
-        }
-        
+        } 
         [TestMethod]
         public void TestORM_FindAll()
         {
@@ -110,6 +111,20 @@ namespace UnitTestProject2
            // var kk= orm.FindAll(x => "ffffff".Contains(x.Classname) && "" == "");
             var kkk = orm.FindAll(x => x.Keys.Contains("fdfdf"));
             Assert.IsNotNull(kkk);
+        }
+        [TestMethod]
+        public void TestORM_Find()
+        {
+            A_testyy y = new A_testyy();
+            var k = orm.Find(where => where.Id > 1, (Display, F) => Display(F.Keys, F.Class));
+            Assert.IsNotNull(k);
+        }
+        [TestMethod]
+        public void TestORM_Avg()
+        {
+
+            var k = orm.Avg<int>((Display, F) => Display(F.Sex), where => where.Yy == "two99777" && where.Sex > 0);
+            Assert.AreEqual(k, 1);
         }
         [TestMethod]
         public void TestORM_Max()
@@ -135,7 +150,7 @@ namespace UnitTestProject2
         [TestMethod]
         public void TestORM_Count()
         {
-            var k = orm.Count(where => where.Yy.EndsWith("sdfkjkh") && where.Sex > 0);
+            var k = orm.Count(where => where.Yy.EndsWith("lkjl") && where.Sex > 0);
             Assert.IsTrue(k==1);
         }
         [TestMethod]
@@ -179,7 +194,7 @@ namespace UnitTestProject2
             yy.Keys = "keys99";
             //yy.Sex = 3;
             yy.Class = "fdk";
-            long r = orm.Insert(yy);
+            long r = orm.Add(yy);
             Assert.IsTrue(r>0);
         }
         [TestMethod]
@@ -246,9 +261,12 @@ namespace UnitTestProject2
         //}
         [TestMethod]
         public void TestDataList() {
-            string consql = "Data Source=192.168.4.185;Initial Catalog=CRM_Backup;Persist Security Info=True;User ID=sa;Password=wulin!111111";
-
-            var d= this.Query<object>("select  * from a_testyy") ;
+            PageView v = new PageView();
+            v.PageIndex = 0;
+            v.PageSize = 2;
+            v.SortName = "Id";
+            v.SortOrder = "desc";
+            var d= this.PageGet<object>(v,"select  * from a_testyy") ;
 
            
             var fdfd = d.ToJson();

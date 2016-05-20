@@ -10,7 +10,7 @@ using System.Text;
 namespace SmiteRepository.Extansions
 {
     /// <summary>
-    /// 启动时注册，不支持线程安全
+    /// 不支持线程安全,所以启动时注册
     /// </summary>
     public static class RegisterORM
     {

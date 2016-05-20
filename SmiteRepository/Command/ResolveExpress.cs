@@ -1,5 +1,6 @@
 ﻿using SmiteRepository.ORMapping;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
@@ -18,14 +19,15 @@ namespace SmiteRepository.Command
         private EntityMeta meta;
         string paramName;
         //public ResolveExpress(Expression expression) {
-         
+
         //    ResolveExpression(expression);
         //}
-        public ResolveExpress( Expression expression,EntityMeta meta) {
+        public ResolveExpress(Expression expression, EntityMeta meta)
+        {
             this.meta = meta;
             ResolveExpression(expression);
         }
-     //  public SqlParameter[] Paras;
+        //  public SqlParameter[] Paras;
 
         /// <summary>
         /// 解析lamdba，生成Sql查询条件
@@ -36,8 +38,8 @@ namespace SmiteRepository.Command
         {
             this.Argument = new Dictionary<string, object>();
             this.SqlWhere = Resolve(expression);
-            if(this.SqlWhere=="1")
-                this.SqlWhere="1=1";
+            if (this.SqlWhere == "1")
+                this.SqlWhere = "1=1";
             //this.Paras = Argument.Select(x => new SqlParameter(x.Key, x.Value)).ToArray();
         }
 
@@ -46,56 +48,62 @@ namespace SmiteRepository.Command
             if (expression == null)
                 return string.Empty;
 
-         
-            if (expression is LambdaExpression)
+            try
             {
-                LambdaExpression lambda = expression as LambdaExpression;
-                paramName = lambda.Parameters[0].ToString()+".";
-                expression = lambda.Body;
-                return Resolve(expression);
-            }
-             if (expression is BinaryExpression)
-            {
-                BinaryExpression binary = expression as BinaryExpression;
-               return ResolveSql(binary);
-                
 
-            }
-             if (expression is UnaryExpression)
-            {
-                UnaryExpression unary = expression as UnaryExpression;
-                if (unary.Operand is MethodCallExpression)//解析!x=>x.Name.Contains("xxx")或!array.Contains(x.Name)这类
-                    return ResolveLinqToObject(unary.Operand, false);
-           
-                
-                return Resolve(unary.Operand);
-            }
-             if (expression is MethodCallExpression)//x=>x.Name.Contains("xxx")或array.Contains(x.Name)这类
-            {
-                MethodCallExpression methodcall = expression as MethodCallExpression;
-                return ResolveLinqToObject(methodcall, true);
-            }
-             if (expression is ConstantExpression)//x=>"abc"=="abc12"
-            {
-                ConstantExpression constant = expression as ConstantExpression;
-              
-                object temp_Value;
-                GetValueOrName(expression, out temp_Value);
-                    return temp_Value.ToString();
-                
-            }
-            if (expression is MemberExpression)
-            { 
-                object temp_Value;
-                GetValueOrName(expression, out temp_Value);
-                    return temp_Value.ToString();
-                
-                     
-            }
-            
-                throw new ORMException("无法解析" + expression);
+                if (expression is LambdaExpression)
+                {
+                    LambdaExpression lambda = expression as LambdaExpression;
+                    paramName = lambda.Parameters[0].ToString() + ".";
+                    expression = lambda.Body;
+                    return Resolve(expression);
+                }
+                if (expression is BinaryExpression)
+                {
+                    BinaryExpression binary = expression as BinaryExpression;
+                    return ResolveSql(binary);
 
-         
+
+                }
+                if (expression is UnaryExpression)
+                {
+                    UnaryExpression unary = expression as UnaryExpression;
+                    if (unary.Operand is MethodCallExpression)//解析!x=>x.Name.Contains("xxx")或!array.Contains(x.Name)这类
+                        return ResolveLinqToObject(unary.Operand, false);
+
+
+                    return Resolve(unary.Operand);
+                }
+                if (expression is MethodCallExpression)//x=>x.Name.Contains("xxx")或array.Contains(x.Name)这类
+                {
+                    MethodCallExpression methodcall = expression as MethodCallExpression;
+                    return ResolveLinqToObject(methodcall, true);
+                }
+                if (expression is ConstantExpression)//x=>"abc"=="abc12"
+                {
+                    ConstantExpression constant = expression as ConstantExpression;
+
+                    object temp_Value;
+                    GetValueOrName(expression, out temp_Value);
+                    return temp_Value.ToString();
+
+                }
+                if (expression is MemberExpression)
+                {
+                    object temp_Value;
+                    GetValueOrName(expression, out temp_Value);
+                    return temp_Value.ToString();
+
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ORMException(string.Format("表达式 {0} 解析异常", expression.ToString()), ex);
+            }
+            throw new ORMException("无法解析" + expression);
+
+
         }
 
         /// <summary>
@@ -158,14 +166,14 @@ namespace SmiteRepository.Command
             if (Operator == "=" || Operator == "<>")
             {
 
-                
+
                 if (Left == "NULL")
                 {
                     Operator = (Operator == "=") ? "IS" : " IS NOT ";
                     Left = Right;
                     Right = "NULL";
                 }
-                else if(Right=="NULL")
+                else if (Right == "NULL")
                     Operator = (Operator == "=") ? "IS" : " IS NOT ";
             }
             string Result = string.Format("({0} {1} {2})", Left, Operator, Right);
@@ -173,19 +181,19 @@ namespace SmiteRepository.Command
         }
 
         private string ResolveLinqToObject(Expression expression, object value, ExpressionType? expressiontype = null)
-        { 
+        {
 
             var MethodCall = expression as MethodCallExpression;
             var MethodName = MethodCall.Method.Name;
             switch (MethodName)
             {
                 case "StartsWith":
-                    return Like(MethodCall, "CONCAT({0},'%')");
+                    return Like(MethodCall, "({0}+'%')");
                 case "EndsWith":
-                    return Like(MethodCall, "CONCAT('%',{0})");
+                    return Like(MethodCall, "('%'+{0})");
                 case "Contains":
                     if (MethodCall.Object != null && MethodCall.Object.Type == typeof(string))
-                        return Like(MethodCall, "CONCAT('%',{0},'%')");
+                        return Like(MethodCall, "('%'+{0}+'%')");
                     else
                         return In(MethodCall, value);
                 //case "ContainsKey":
@@ -200,11 +208,59 @@ namespace SmiteRepository.Command
                 default:
                     throw new ORMException(string.Format("不支持{0}方法的查找！", MethodName));
             }
+
+            //switch (MethodName)
+            //{
+            //    case "StartsWith":
+            //        return Like(MethodCall, "(CAST({0} AS VARCHAR)+'%')");
+            //    case "EndsWith":
+            //        return Like(MethodCall, "('%'+CAST({0} AS VARCHAR))");
+            //    case "Contains":
+            //        if (MethodCall.Object != null && MethodCall.Object.Type == typeof(string))
+            //            return Like(MethodCall, "('%'+CAST({0} AS VARCHAR)+'%')");
+            //        else
+            //            return In(MethodCall, value);
+            //    //case "ContainsKey":
+            //    //    if (MethodCall.Object != null && MethodCall.Object.Type == typeof(string))
+            //    //        return Like(MethodCall, "CONCAT('%',{0},'%')");
+            //    //    else
+            //    //        return In(MethodCall, value);                    
+            //    case "Count":
+            //        return Len(MethodCall, value, expressiontype.Value);
+            //    case "LongCount":
+            //        return Len(MethodCall, value, expressiontype.Value);
+            //    default:
+            //        throw new ORMException(string.Format("不支持{0}方法的查找！", MethodName));
+            //}
+
+            //switch (MethodName)
+            //{
+            //    case "StartsWith":
+            //        return Like(MethodCall, "CONCAT({0},'%')");
+            //    case "EndsWith":
+            //        return Like(MethodCall, "CONCAT('%',{0})");
+            //    case "Contains":
+            //        if (MethodCall.Object != null && MethodCall.Object.Type == typeof(string))
+            //            return Like(MethodCall, "CONCAT('%',{0},'%')");
+            //        else
+            //            return In(MethodCall, value);
+            //    //case "ContainsKey":
+            //    //    if (MethodCall.Object != null && MethodCall.Object.Type == typeof(string))
+            //    //        return Like(MethodCall, "CONCAT('%',{0},'%')");
+            //    //    else
+            //    //        return In(MethodCall, value);                    
+            //    case "Count":
+            //        return Len(MethodCall, value, expressiontype.Value);
+            //    case "LongCount":
+            //        return Len(MethodCall, value, expressiontype.Value);
+            //    default:
+            //        throw new ORMException(string.Format("不支持{0}方法的查找！", MethodName));
+            //}
         }
 
         private string SetArgument(string name, object value)
         {
-          //   name = "@param_"+name;
+            //   name = "@param_"+name;
             string temp = "@param_" + Argument.Count;
             while (Argument.ContainsKey(temp))
             {
@@ -218,9 +274,9 @@ namespace SmiteRepository.Command
             return temp;
         }
 
-        private int ResolveMethodCall(MethodCallExpression expression,out string LeftName,out string RightName)
+        private int ResolveMethodCall(MethodCallExpression expression, out string LeftName, out string RightName)
         {
-           
+
             Expression arguments0;
             Expression arguments1;
             if (expression.Object == null)
@@ -236,66 +292,68 @@ namespace SmiteRepository.Command
             LeftName = Resolve(arguments0);
             RightName = Resolve(arguments1);
             return 0;
-          
+
         }
-        private int GetValueOrName(Expression expression,out object Value) {
+        private int GetValueOrName(Expression expression, out object Value)
+        {
 
             if (expression is MemberExpression)
             {
                 MemberExpression nember = (expression as MemberExpression);
-             
+
                 if (nember.Member.MemberType == MemberTypes.Property)
                 {
-                    if(nember.ToString().StartsWith(paramName))
+                    if (nember.ToString().StartsWith(paramName))
                     {
                         if (nember.Member.Name == "Value")
                         {
                             nember = (nember.Expression as MemberExpression);
 
                         }
-                       
-                            
-                            Value = getColumnName( nember.Member.Name);
-                            return 1;
-                        
+
+
+                        Value = getColumnName(nember.Member.Name);
+                        return 1;
+
                     }
-                   
-                   
+
+
                 }
-              
-                    LambdaExpression lambda = Expression.Lambda(expression);
-                    Delegate fn = lambda.Compile();
-                    ConstantExpression value = Expression.Constant(fn.DynamicInvoke(null), expression.Type);
-                    Value = value.Value;
-                    if (Value == null)
-                    {
-                        Value = "NULL";
-                        return 2;
-                    }
-                    if (Value is bool)
-                    {
-                        Value = Value.Equals(true) ? "1" : "0";
-                        return 2;
-                    }
-                    if (Value.GetType().GetInterface("IList") != null)
-                    {
-                        List<string> SetInPara = new List<string>();
-                        int i = 1;
-                        foreach (var item in (Value as IEnumerable<object>))
-                        {
-                            string Name_para = string.Format("{0}_InParameter{1}", Value.GetHashCode().ToString(), i);
-                            string Key = SetArgument(Name_para, item);
-                            SetInPara.Add(Key);
-                            i++;
-                        }
-                        Value = string.Join(",", SetInPara.ToArray());
-                       
-                    }
-                    else {
-                        Value= SetArgument(expression.GetHashCode().ToString(), Value);
-                    }
+
+                LambdaExpression lambda = Expression.Lambda(expression);
+                Delegate fn = lambda.Compile();
+                ConstantExpression value = Expression.Constant(fn.DynamicInvoke(null), expression.Type);
+                Value = value.Value;
+                if (Value == null)
+                {
+                    Value = "NULL";
                     return 2;
-                
+                }
+                if (Value is bool)
+                {
+                    Value = Value.Equals(true) ? "1" : "0";
+                    return 2;
+                }
+                if (Value.GetType().GetInterface("IList") != null)
+                {
+                    List<string> SetInPara = new List<string>();
+                    int i = 1;
+                    foreach (var item in (Value as IEnumerable))
+                    {
+                        string Name_para = string.Format("{0}_InParameter{1}", Value.GetHashCode().ToString(), i);
+                        string Key = SetArgument(Name_para, item);
+                        SetInPara.Add(Key);
+                        i++;
+                    }
+                    Value = string.Join(",", SetInPara.ToArray());
+
+                }
+                else
+                {
+                    Value = SetArgument(expression.GetHashCode().ToString(), Value);
+                }
+                return 2;
+
             }
             else if (expression is ConstantExpression)
             {
@@ -347,35 +405,36 @@ namespace SmiteRepository.Command
                 Value = tempName;
             }
             string Operator = Convert.ToBoolean(isTrue) ? "in" : " not in";
-            string Result = string.Format("{0} {1} ({2})",Name, Operator, Value);
+            string Result = string.Format("{0} {1} ({2})", Name, Operator, Value);
             return Result;
         }
 
-        private string Like(MethodCallExpression expression,string likeType)
+        private string Like(MethodCallExpression expression, string likeType)
         {
-            string Name;string Value;
-           ResolveMethodCall(expression, out Name, out Value);
-           return string.Format("{0} like {1}", Name, string.Format(likeType, Value,"'","+"));           
-           
+            string Name; string Value;
+            ResolveMethodCall(expression, out Name, out Value);
+            return string.Format("{0} like {1}", Name, string.Format(likeType, Value, "'", "+"));
+
         }
-       
+
 
         private string Len(MethodCallExpression expression, object value, ExpressionType expressiontype)
         {
             string Name; string Value;
             ResolveMethodCall(expression, out Name, out Value);
-          
+
             string Operator = GetOperator(expressiontype);
             string Result = string.Format("len({0}){1}{2}", getColumnName(Name), Operator, Name);
             return Result;
-          
+
         }
-        private string getColumnName(string fileName) {
-          
-            if(meta==null)
+        private string getColumnName(string fileName)
+        {
+
+            if (meta == null)
                 throw new ORMException("映射类没有设置");
             EntityColumnMeta column = meta.Columns.Find(x => x.FieldName == fileName);
-            if(column==null)
+            if (column == null)
                 throw new ORMException(string.Format("映射列名[{0}]找不到", fileName));
             return column.ColumnName;
 
