@@ -1,12 +1,13 @@
 # SmiteRepository
 ####.NET ORM框架，基于Dapper效率高，操作实体类就可以实现数据库操作，很简单方便。联系 else-love@qq.com
 ---
-1. 根据条件Update,Delete有修改字段，不会Update全字段。
+1. 根据条件Update,Delete有修改字段，不会Update全字段,Insert也是。
 2. 各种表ORM查寻：Find,FindAll,Max,Min,Count,Scalar,Exists,Sum，操作简单。
 3. Find ，FindAll 可指定 输出列，更好节省资源、合理利用索引
 3. 支持原始SQL语句操作
 3. 支持分库，简单高效分页
 4. 分表（非侵入式）。  
+5. 支持with(nolock) 可设置 
 5. 可注册拦截所有SQL，记录日志或修改SQL
 ***
 Dao层类，继承BaseRepository，BaseOracleRepository，BaseMysqlRepository  其中一个，根据数据库，
