@@ -1,5 +1,5 @@
 # SmiteRepository
-####.NET ORM框架，基于Dapper效率高，操作实体类就可以实现数据库操作，很简单方便。联系：<else-love@qq.com
+####.NET ORM框架，基于Dapper效率高，操作实体类就可以实现数据库操作，很简单方便。联系：else-love@qq.com
 ---
 1. 根据条件Update,Delete有修改字段，不会Update全字段。
 2. 各种表ORM查寻：Find,FindAll,Max,Min,Count,Scalar,Exists,Sum，操作简单。
@@ -98,10 +98,6 @@ Usings = new List<string>()
 
 Mysql,Oracle会有些BUG,（语法方面），用到的朋友请自己修改
 
-```flow
-start=>start: 创建类
-end=>end: 返回结果
-start->end
-```
 
->   如有什么问题 或好想法请联系 <else-love@qq.com
+
+>   如有什么问题 或好想法请联系 else-love@qq.com
