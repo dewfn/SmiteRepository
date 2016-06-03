@@ -47,7 +47,7 @@ namespace SmiteRepository.Mysql
 
             return sqlbuilder.ToString();
         }
-
+        //插入全字段 
         public static string EntityMetaToInsertSQL(EntityMeta meta)
         {                
             if (meta.Columns == null || meta.Columns.Count == 0)
@@ -96,7 +96,7 @@ namespace SmiteRepository.Mysql
 
             return sqlbuilder.ToString();          
         }
-
+        //更新全字段 
         public static string EntityMetaToUpdateSQL(EntityMeta meta)
         {
             if (meta.Columns == null || meta.Columns.Count == 0)
@@ -215,10 +215,11 @@ namespace SmiteRepository.Mysql
                 sqlbuilder.Append(" WHERE ");
                 for (int i = 0, j = keys.Count; i < j; i++)
                 {
-                    if (!list.Contains(keys[i].ColumnName))
-                    {
-                        throw new ORMException(string.Format("主键字段[{0}]必需设置值", keys[i].FieldName));
-                    }
+                    //主键不需要赋值
+                    //if (!list.Contains(keys[i].ColumnName))
+                    //{
+                    //    throw new ORMException(string.Format("主键字段[{0}]必需设置值", keys[i].FieldName));
+                    //}
                     if (i > 0)
                     {
                         sqlbuilder.Append(" AND ");
