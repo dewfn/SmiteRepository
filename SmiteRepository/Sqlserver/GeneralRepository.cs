@@ -45,11 +45,11 @@ namespace SmiteRepository.Sqlserver
             return base.ExecuteCommand( safeSql, param,cmdType);
         }
 
-        public T GetScalar<T>(string safeSql, CommandType cmdType = CommandType.Text) where T : IConvertible
+        public T GetScalar<T>(string safeSql, CommandType cmdType = CommandType.Text)
         {
             return base.GetScalar<T>(safeSql, cmdType);
         }
-        public T GetScalar<T>(string safeSql,object param, CommandType cmdType = CommandType.Text) where T : IConvertible
+        public T GetScalar<T>(string safeSql, object param, CommandType cmdType = CommandType.Text) 
         {
             return base.GetScalar<T>(safeSql, param, cmdType);
         }

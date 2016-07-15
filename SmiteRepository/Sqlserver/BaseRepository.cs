@@ -136,11 +136,11 @@ namespace SmiteRepository.Sqlserver
             return DBHelper.ExecuteCommand(this.connectionString, safeSql, param, cmdType, transaction, timeOut);
         }
 
-        protected T GetScalar<T>(string safeSql, CommandType cmdType = CommandType.Text, IDbTransaction transaction = null, int? timeOut = null) where T : IConvertible
+        protected T GetScalar<T>(string safeSql, CommandType cmdType = CommandType.Text, IDbTransaction transaction = null, int? timeOut = null) 
         {
             return GetScalar<T>(safeSql, null, cmdType, transaction, timeOut);
         }
-        protected T GetScalar<T>(string safeSql, object param, CommandType cmdType = CommandType.Text, IDbTransaction transaction = null, int? timeOut = null) where T : IConvertible
+        protected T GetScalar<T>(string safeSql, object param, CommandType cmdType = CommandType.Text, IDbTransaction transaction = null, int? timeOut = null) 
         {
             return DBHelper.GetScalar<T>(this.connectionString, safeSql, param, cmdType, transaction, timeOut);            
             
