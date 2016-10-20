@@ -166,23 +166,23 @@ namespace SmiteRepository.Sqlserver
             return DBHelper.GetDataSet(this.connectionString, safeSql, param, cmdType, transaction, timeOut);
         }
 
-        protected List<TResult> Query<TResult>(string safeSql, CommandType cmdType = CommandType.Text, IDbTransaction transaction = null, int? timeOut = null) where TResult : class,new()
+        protected List<TResult> Query<TResult>(string safeSql, CommandType cmdType = CommandType.Text, IDbTransaction transaction = null, int? timeOut = null) 
         {
             return Query<TResult>(safeSql, null, cmdType, transaction, timeOut);
         }
 
 
-        protected List<TResult> Query<TResult>(string safeSql, object param, CommandType cmdType = CommandType.Text, IDbTransaction transaction = null, int? timeOut = null) where TResult : class,new()
+        protected List<TResult> Query<TResult>(string safeSql, object param, CommandType cmdType = CommandType.Text, IDbTransaction transaction = null, int? timeOut = null)
         {
             return DBHelper.Query<TResult>(connectionString,safeSql, param,cmdType, transaction ,  timeOut);
         }
 
 
-        protected TResult Get<TResult>(string safeSql, CommandType cmdType = CommandType.Text, IDbTransaction transaction = null, int? timeOut = null) where TResult : class,new()
+        protected TResult Get<TResult>(string safeSql, CommandType cmdType = CommandType.Text, IDbTransaction transaction = null, int? timeOut = null) 
         {
             return Get<TResult>(safeSql, null, cmdType, transaction ,  timeOut);
         }
-        protected TResult Get<TResult>(string safeSql, object param, CommandType cmdType = CommandType.Text,IDbTransaction transaction = null, int? timeOut=null) where TResult : class,new()
+        protected TResult Get<TResult>(string safeSql, object param, CommandType cmdType = CommandType.Text,IDbTransaction transaction = null, int? timeOut=null) 
         {
             return Query<TResult>(safeSql,param,cmdType, transaction ,  timeOut).FirstOrDefault();
         }
