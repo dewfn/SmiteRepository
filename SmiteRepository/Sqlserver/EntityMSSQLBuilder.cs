@@ -261,7 +261,7 @@ namespace SmiteRepository.Sqlserver
 
 
             string pageSql = string.Format(pageSql2,
-                view.PageIndex * view.PageSize, ordersql, Define.MYROWID, selectColums, (view.PageIndex + 1) * view.PageSize, tablename, wheresql);
+                view.PageIndex * view.PageSize+1, ordersql, Define.MYROWID, selectColums, (view.PageIndex + 1) * view.PageSize, tablename, wheresql);
             return pageSql;
         }
         static string pageCountSql = " SELECT Count(1) AS COUNT_ROW FROM {0} {1}";
