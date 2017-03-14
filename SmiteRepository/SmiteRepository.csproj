@@ -52,6 +52,7 @@
     <Compile Include="BaseEntity.cs" />
     <Compile Include="Dapper\SqlMapper.cs" />
     <Compile Include="DataParameter.cs" />
+    <Compile Include="Proxy\EntityProxy.cs" />
     <Compile Include="OrderByExtensions.cs" />
     <Compile Include="Extansions\ExecSqlEvent.cs" />
     <Compile Include="Extansions\RegisterORM.cs" />

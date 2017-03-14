@@ -71,6 +71,9 @@ namespace UnitTestProject2
         public delegate string CreateTableNameDelegate<T>(T o);
 
         static void Main() {
+            A_testage a= BaseEntity.New<A_testage>();
+            a.Age = 1;
+            a.Keys = "2323";
 
 
             string s = null;

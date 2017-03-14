@@ -10,7 +10,7 @@ namespace SmiteRepository
     /// <summary>
     /// Safety编译的支持线程安全
     /// </summary>
-    public abstract class BaseEntity
+    public abstract class BaseEntity : MarshalByRefObject
     {
         public BaseEntity() { }
         //private static Dictionary<Type, string> _InsertSqlCache = new Dictionary<Type, string>();
@@ -27,12 +27,16 @@ namespace SmiteRepository
         {
             get { return _PropertyChangedList; }
         }
-
+        
         #region 属性
         [Ignore]
         internal bool FullUpdate { get; set; }
         #endregion
         #region 公开方法
+        public static T New<T>() where T :  BaseEntity,new()
+        {
+            return new SmiteRepository.Proxy.EntityProxy(new T()).GetTransparentProxy() as T;
+        }
         //internal string GetInsertSQL()
         //{
         //    //if (FullUpdate)
@@ -91,7 +95,7 @@ namespace SmiteRepository
 #endif
         }
 
-        protected void OnPropertyChanged(string pName)
+        protected internal void OnPropertyChanged(string pName)
         {
 #if Safety
             lock (lockobject)
@@ -106,6 +110,8 @@ namespace SmiteRepository
 #endif
         }
 
+       
+        
         //internal string GetReplaceInsertSQL()
         //{
         //    Type t = this.GetType();

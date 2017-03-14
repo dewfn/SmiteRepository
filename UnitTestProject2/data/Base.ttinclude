@@ -73,6 +73,8 @@ bool   RenderField              = false;
 bool   RenderBackReferences     = true;
 bool   RenderForeignKeys        = true;
 
+bool   RenderOnPropertyChanged        = true;
+
 bool   IsMetadataLoaded;
 
 int MaxColumnTypeLen;
@@ -152,7 +154,8 @@ static Action<GeneratedTextTransformation,Column,int[],string[]> RenderColumn = 
 	else
 	{	
 		tt.Write("{{ get{{ return {0}; }} 	set{{ {0} = value ;",c.MemberName.StartsWith("@")?c.MemberName.Insert(1,"_"):c.MemberName.Insert(0,"_"));
-		if(!c.IsIdentity||c.IsPrimaryKey)
+		
+		if(tt.RenderOnPropertyChanged&&(!c.IsIdentity||c.IsPrimaryKey))
         {
 			tt.Write("  OnPropertyChanged(\"{1}\"); }}",c.MemberName,temp_Fname.StartsWith("@")?temp_Fname.Substring(1):temp_Fname);
         }

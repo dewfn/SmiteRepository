@@ -19,7 +19,7 @@ namespace UnitTestProject2
     {
         
         public UnitTest1()
-            : base("Data Source=.;Initial Catalog=Test;Persist Security Info=True;User ID=sa;Password=123456;pooling=true;min pool size=5;max pool size=5")
+            : base("Data Source=.;Initial Catalog=master;Persist Security Info=True;User ID=sa;Password=123456;pooling=true;min pool size=5;max pool size=5")
         {
             orm = base.For<A_testyy>();
             ExecSqlHandle.RegisterExecHandle(delegate(string sql,object @params){
@@ -116,7 +116,7 @@ namespace UnitTestProject2
         [TestMethod]
         public void TestUpdate( )
         {
-            A_testyy y = new A_testyy();
+            A_testyy y = A_testyy.New<A_testyy>();
             
             y.Keys = "keys8";            
             y.Sex = 8;
@@ -129,7 +129,7 @@ namespace UnitTestProject2
         [TestMethod]
         public void TestInsert()
         {
-            A_testyy yy = new A_testyy();
+            A_testyy yy = A_testyy.New<A_testyy>();
             yy.Yy = "新的";
             yy.Keys = "keys99";
             //yy.Sex = 3;

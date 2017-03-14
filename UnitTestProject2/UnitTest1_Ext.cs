@@ -19,7 +19,7 @@ namespace UnitTestProject2
     {
 
         public UnitTest1_Ext()
-            : base("Data Source=.;Initial Catalog=Test;Persist Security Info=True;User ID=sa;Password=123456;pooling=true;min pool size=5;max pool size=5")
+            : base("Data Source=.;Initial Catalog=master;Persist Security Info=True;User ID=sa;Password=123456;pooling=true;min pool size=5;max pool size=5")
         {
            
             RegisterORM.Register_CustomTableNameToDelete<A_testyy>(where => where.Id > 3,
@@ -115,7 +115,7 @@ namespace UnitTestProject2
         [TestMethod]
         public void TestORM_Find()
         {
-            A_testyy y = new A_testyy();
+            A_testyy y =A_testyy.New<A_testyy>();
             var k = orm.Find(where => where.Id > 1, (Display, F) => Display(F.Keys, F.Class));
             Assert.IsNotNull(k);
         }
@@ -176,7 +176,7 @@ namespace UnitTestProject2
         [TestMethod]
         public void TestUpdate( )
         {
-            A_testyy y = new A_testyy();
+            A_testyy y = A_testyy.New<A_testyy>();
             
             y.Keys = "keys8";            
             y.Sex = 8;
@@ -189,7 +189,7 @@ namespace UnitTestProject2
         [TestMethod]
         public void TestInsert()
         {
-            A_testyy yy = new A_testyy();
+            A_testyy yy =A_testyy.New<A_testyy>();
             yy.Yy = "two新的";
             yy.Keys = "keys99";
             //yy.Sex = 3;
@@ -207,7 +207,7 @@ namespace UnitTestProject2
         [TestMethod]
         public void TestUpdate222()
         {
-            A_testyy z = new A_testyy();
+            A_testyy z =A_testyy.New<A_testyy>();
             z.Sex =1;
             z.Class = "testupdate1";
             var r = orm.Update(z, w => w.Yy == "two99777");
@@ -225,7 +225,7 @@ namespace UnitTestProject2
             v.PageSize = 3;
             v.SortName = "Id";
             v.SortOrder = "desc";
-            A_testyy filter = new A_testyy();
+            A_testyy filter =A_testyy.New<A_testyy>();
             filter.Keys = "12";
             filter.Sex = 9;
             System.Linq.Expressions.Expression<Predicate<A_testyy>> where = w => 1 == 1;

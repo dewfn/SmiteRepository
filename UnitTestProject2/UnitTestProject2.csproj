@@ -65,6 +65,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Class1.cs" />
+    <Compile Include="Class2.cs" />
     <Compile Include="DataList.cs" />
     <Compile Include="data\EntityGenerate.cs">
       <AutoGen>True</AutoGen>
@@ -91,7 +92,6 @@
     </None>
     <None Include="data\MSSQL.ttinclude" />
     <None Include="LoadTest1.loadtest" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
